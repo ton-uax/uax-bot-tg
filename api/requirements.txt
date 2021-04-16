@@ -1,0 +1,30 @@
+
+certifi==2020.6.20        # via requests
+chardet==3.0.4            # via requests
+click==7.1.2              # via pip-tools
+django-debug-toolbar==2.2  # via -r requirements.in
+django-environ==0.4.5     # via -r requirements.in
+django-extensions==3.0.9  # via -r requirements.in
+django==3.0.5             # via -r requirements.in, django-debug-toolbar, djangorestframework
+djangorestframework==3.11.1  # via -r requirements.in
+gunicorn==20.0.4          # via -r requirements.in
+idna==2.10                # via requests
+invoke==1.4.1             # via -r requirements.in
+ipython-genutils==0.2.0   # via traitlets
+pip-tools==5.3.1          # via -r requirements.in
+psycopg2-binary==2.8.6    # via -r requirements.in
+pytz==2020.1              # via django
+requests==2.24.0          # via -r requirements.in
+six==1.15.0               # via cryptography, packaging, pip-tools
+sqlparse==0.3.1           # via django, django-debug-toolbar
+urllib3==1.25.10          # via requests
+Pyrogram==0.17.1
+TgCrypto==1.2.0
+celery==4.4.1
+redis==3.5.3
+django-redis==4.12.1
+django-celery-beat
+django-celery-results
+django-admin-tools==0.9.0
+ton-client-py
+

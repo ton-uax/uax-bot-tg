@@ -1,0 +1,344 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initConsole",
+			"inputs": [
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"ownerKeys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "scenario0",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "scenario1",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deploySystemWallets",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWallets",
+			"inputs": [
+				{"name":"n","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWalletsWithKeys",
+			"inputs": [
+				{"name":"keys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWalletWithTokens",
+			"inputs": [
+				{"name":"key","type":"uint256"},
+				{"name":"tokens","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployOwnerWallets",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployOwnerWalletsWithKeys",
+			"inputs": [
+				{"name":"keys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "assignTo",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "airdrop",
+			"inputs": [
+				{"name":"addrs","type":"address[]"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "mintTo",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "burnFrom",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "doTransfer",
+			"inputs": [
+				{"name":"from","type":"address"},
+				{"name":"to","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "doLightTransfer",
+			"inputs": [
+				{"name":"from","type":"address"},
+				{"name":"to","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "doTwoTransfers",
+			"inputs": [
+				{"name":"from","type":"address"},
+				{"name":"to","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "roundTransfer",
+			"inputs": [
+				{"name":"addrs","type":"address[]"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "doDoppel",
+			"inputs": [
+				{"name":"addrs","type":"address[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateImage",
+			"inputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"image","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getSis",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"sis","type":"map(uint8,cell)"}
+			]
+		},
+		{
+			"name": "updateSI",
+			"inputs": [
+				{"name":"owner","type":"cell"},
+				{"name":"token","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setConfig",
+			"inputs": [
+				{"name":"welcomeBonus","type":"uint32"},
+				{"name":"initialBalance","type":"uint64"},
+				{"name":"warnBalance","type":"uint64"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getConfig",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"welcomeBonus","type":"uint32"},
+				{"name":"initialBalance","type":"uint64"},
+				{"name":"warnBalance","type":"uint64"},
+				{"name":"transferFee","type":"uint8"}
+			]
+		},
+		{
+			"name": "setMode",
+			"inputs": [
+				{"name":"logLevel","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "shuffle",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "approve",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"eventID","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "reject",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"eventID","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "propose",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"eType","type":"uint8"},
+				{"name":"value","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"c","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initMember",
+			"inputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"id","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "meet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"a","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateMode",
+			"inputs": [
+				{"name":"logLevel","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getMode",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"logLevel","type":"uint16"}
+			]
+		},
+		{
+			"name": "getEnv",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"}
+			]
+		},
+		{
+			"name": "_clients",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_clients","type":"map(address,uint16)"}
+			]
+		},
+		{
+			"name": "_images",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"_images","type":"map(uint8,tuple)"}
+			]
+		},
+		{
+			"name": "_deployed",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"addr","type":"address"},{"name":"ts","type":"uint32"}],"name":"_deployed","type":"map(uint8,tuple)"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}

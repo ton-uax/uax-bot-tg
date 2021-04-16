@@ -1,0 +1,74 @@
+version: "3.5"
+
+services:
+  postgres:
+    image: postgres:11
+    volumes:
+      - uax_pg_data:/var/lib/uax_postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=uax_wallet_db
+    ports:
+      - "5432:5432"
+  redis:
+    restart: always
+    image: redis:alpine
+    depends_on:
+      - postgres
+    expose:
+      - "6379"
+    volumes:
+      - ch_cache:/src/redis/ch_cache
+  uax-api:
+    build:
+      context: ./../
+      dockerfile: docker/images/api/Dockerfile
+    ports:
+      - 8080
+    depends_on:
+      - postgres
+    volumes:
+      - uax_static_volume:/src/uax_public/static
+      - uax_cache:/src/redis/uax_cache
+    environment:
+      - CORE_DATABASE_WAIT=1
+      - CORE_DATABASE_URL=psql://postgres:postgres@postgres:5432/uax_wallet_db
+  uax_bot:
+    build:
+      context: ./../  # games-bot
+      dockerfile: docker/images/bot/Dockerfile
+    environment:
+      - BOT_TOKEN
+    depends_on:
+      - uax-api
+    volumes:
+      - uax_cache:/src/redis/uax_cache
+  uaxcelery_worker:
+    restart: on-failure
+    build:
+      context: ./../
+      dockerfile: docker/images/celery/Dockerfile
+    command: [ "python", '-m', "celery", "-A", "core.config", "worker", "-l", "info" ]
+    depends_on:
+      - uax-api
+    environment:
+      - CORE_DATABASE_WAIT=1
+      - CORE_DATABASE_URL=psql://postgres:postgres@postgres:5432/uax_wallet_db
+    image: uax_celery
+  uaxcelery_beat:
+    restart: on-failure
+    command: [ "python", '-m', "celery", "--pidfile=", "-A", "core.config", "beat", "-l", "info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler" ]
+    depends_on:
+      - uax-api
+    environment:
+      - CORE_DATABASE_WAIT=1
+      - CORE_DATABASE_URL=psql://postgres:postgres@postgres:5432/uax_wallet_db
+    image: uax_celery
+
+
+volumes:
+  uax_pg_data:
+  uax_static_volume:
+  uax_cache:
+  letsencrypt:
