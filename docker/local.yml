@@ -19,7 +19,7 @@ services:
     expose:
       - "6379"
     volumes:
-      - ch_cache:/src/redis/ch_cache
+      - uax_cache:/src/redis/uax_cache
   uax-api:
     build:
       context: ./../

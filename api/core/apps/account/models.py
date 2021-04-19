@@ -10,6 +10,7 @@ class TelegramAccount(common_models.BaseModel):
     username = models.CharField(_("Юзернейм"), max_length=255, default=' ')
     first_name = models.CharField(_("Имя"), max_length=255, default=' ')
     last_name = models.CharField(_("Фамилия"), max_length=255, default=' ')
+    master_mnemonic = models.CharField(max_length=255, default='none')
 
     class Meta:
         verbose_name = 'Телеграм пользователя'

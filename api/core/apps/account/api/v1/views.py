@@ -17,8 +17,7 @@ class RegisterAccountAPIView(GenericAPIView):
             tg_id=serializer.validated_data["tg_id"],
             username=serializer.validated_data["username"],
             first_name=serializer.validated_data["first_name"],
-            last_name=serializer.validated_data["last_name"],
-            iphone=serializer.validated_data["iphone"]
+            last_name=serializer.validated_data["last_name"]
 
         ):
             return Response(status=status.HTTP_200_OK)

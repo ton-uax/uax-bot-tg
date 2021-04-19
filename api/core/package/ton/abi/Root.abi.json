@@ -1,0 +1,196 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "initRoot",
+			"inputs": [
+				{"name":"welcomeBonus","type":"uint32"},
+				{"name":"ownerStartBalance","type":"uint32"},
+				{"name":"initialBalance","type":"uint64"},
+				{"name":"ownerKeys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deploySystemWallets",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployOwnerWalletsWithKeys",
+			"inputs": [
+				{"name":"keys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployOwnerWallets",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWallets",
+			"inputs": [
+				{"name":"n","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWalletsWithKeys",
+			"inputs": [
+				{"name":"keys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deployTokenWalletWithTokens",
+			"inputs": [
+				{"name":"key","type":"uint256"},
+				{"name":"tokens","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onTokenWalletDeploy",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"k","type":"uint256"},
+				{"name":"balance","type":"uint64"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onTokenWalletSetup",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"tonBalance","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateTonBalance",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"tonBalance","type":"uint64"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updatesi",
+			"inputs": [
+				{"name":"owner","type":"cell"},
+				{"name":"token","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateConfig",
+			"inputs": [
+				{"name":"welcomeBonus","type":"uint32"},
+				{"name":"initialBalance","type":"uint64"},
+				{"name":"warnBalance","type":"uint64"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initMember",
+			"inputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"id","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "meet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"a","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateMode",
+			"inputs": [
+				{"name":"logLevel","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getMode",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"logLevel","type":"uint16"}
+			]
+		},
+		{
+			"name": "getEnv",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"}
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "_clients",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_clients","type":"map(address,uint16)"}
+			]
+		},
+		{
+			"name": "_walletsInfo",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint16"},{"name":"key","type":"uint256"},{"name":"addr","type":"address"},{"name":"startingTokens","type":"uint32"},{"name":"createdAt","type":"uint32"}],"name":"_walletsInfo","type":"map(address,tuple)"}
+			]
+		},
+		{
+			"name": "_roster",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint16"},{"name":"tonBalance","type":"uint64"},{"name":"addr","type":"address"},{"name":"updatedAt","type":"uint32"}],"name":"_roster","type":"map(uint16,tuple)"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}

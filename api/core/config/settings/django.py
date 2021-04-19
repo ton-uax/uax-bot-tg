@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'core.apps.common',
     'core.apps.account',
     'core.apps.wallet',
-    'core.apps.helpbot',
     'core.apps.broadcast',
 
 ]
@@ -130,9 +129,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_BEAT_SCHEDULE = {
 
-    "broadcast": {
-        "task": "core.apps.broadcast.tasks.check_broadcast_query",
-        "schedule": crontab(minute='*/2')
+    # "broadcast": {
+    #     "task": "core.apps.broadcast.tasks.check_broadcast_query",
+    #     "schedule": crontab(minute='*/2')
+    # },
+    "check_balance": {
+        "task": "core.apps.wallet.tasks.check_balance",
+        "schedule": 5
     },
 
 }

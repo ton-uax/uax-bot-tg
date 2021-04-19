@@ -6,7 +6,7 @@ class WalletAPI:
     base_url = 'http://uax-api:8080/api/v1/'
 
     @classmethod
-    def registration_user(cls, tg_user: User, iphone: bool):
+    def registration_user(cls, tg_user: User):
         request_url = "accounts/user/"
 
         username = tg_user.username
@@ -24,7 +24,7 @@ class WalletAPI:
             "tg_id": tg_user.id,
             "username": username,
             "first_name": first_name,
-            "last_name": last_name
+            "last_name": last_name,
         }
 
         response = requests.post(cls.base_url + request_url, data=data)
@@ -33,10 +33,30 @@ class WalletAPI:
             return "is_created"
 
     @classmethod
-    def check_user(cls, tg_id: int):
+    def create_wallet(cls, tg_id: int):
+        request_url = f'wallet/create/{tg_id}/'
+        response = requests.get(cls.base_url + request_url)
+        return response.json()
 
+    @classmethod
+    def check_user(cls, tg_id: int):
         request_url = f'accounts/{tg_id}/'
         response = requests.get(cls.base_url+request_url)
         return response
 
+    @classmethod
+    def check_wallet(cls, address: str):
+        request_url = f'wallet/check/{address}/'
+        response = requests.get(cls.base_url + request_url)
+        if response.status_code == 200:
+            return True
 
+    @classmethod
+    def send_tx(cls, sender_id, address_to: str, amount: str):
+        request_url = f'wallet/sendTx/'
+        data = {
+            "sender_id": sender_id,
+            "address_to": address_to,
+            "amount": amount
+        }
+        response = requests.post(cls.base_url + request_url, data=data)

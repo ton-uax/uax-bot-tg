@@ -46,17 +46,10 @@ class CustomIndexDashboard(Dashboard):
         ))
         
         self.children.append(modules.ModelList(
-            title=u"Инвайты",
-            models=("core.apps.account.models.QueryInvite",),
+            title=u"Кошельки",
+            models=("core.apps.wallet.models.Wallet",),
         ))
-        self.children.append(modules.ModelList(
-            title=u"Рассылка",
-            models=("core.apps.broadcast.models.BroadcastQuery",),
-        ))
-        self.children.append(modules.ModelList(
-            title=u"Арбитраж",
-            models=("core.apps.arbitration.models.ReportAccount",),
-        ))
+
         # append a recent actions module
         self.children.append(modules.RecentActions(_("Recent Actions"), 5))
 

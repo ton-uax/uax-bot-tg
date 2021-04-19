@@ -1,0 +1,162 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "deploy",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onDeploy",
+			"inputs": [
+				{"name":"id","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateImage",
+			"inputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"image","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setOwnerKeys",
+			"inputs": [
+				{"name":"keys","type":"uint256[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getOwnerKeys",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"keys","type":"uint256[]"}
+			]
+		},
+		{
+			"name": "grant",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "purgeRepo",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getSis",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"sis","type":"map(uint8,cell)"}
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"c","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initMember",
+			"inputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"id","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "meet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"a","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateMode",
+			"inputs": [
+				{"name":"logLevel","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getMode",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"logLevel","type":"uint16"}
+			]
+		},
+		{
+			"name": "getEnv",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"}
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "_clients",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_clients","type":"map(address,uint16)"}
+			]
+		},
+		{
+			"name": "_images",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"_images","type":"map(uint8,tuple)"}
+			]
+		},
+		{
+			"name": "_deployed",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"addr","type":"address"},{"name":"ts","type":"uint32"}],"name":"_deployed","type":"map(uint8,tuple)"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}

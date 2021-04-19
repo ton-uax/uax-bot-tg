@@ -10,7 +10,7 @@ class IndexView(TemplateView):
 
 internal_api_v1_urlpatterns = [
     path("accounts/", include("core.apps.account.api.v1.urls", namespace="account"), name="account"),
-    path("arbitration/", include("core.apps.arbitration.api.v1.urls", namespace="arb"), name="arb"),
+    path("wallet/", include("core.apps.wallet.api.v1.urls", namespace="wallet"), name="wallet"),
 
 ]
 
