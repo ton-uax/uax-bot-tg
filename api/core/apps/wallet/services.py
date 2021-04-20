@@ -85,3 +85,16 @@ def send_tx(data):
     wallet.balance = wallet.balance - amount - 1
 
     update_wallet_cache(wallet)
+
+
+def activate_wallet(wallet_id):
+    wallet = wallet_models.Wallet.objects.get(id=wallet_id)
+    if wallet.status == "active":
+        return
+
+    active_wallet = wallet_models.Wallet.objects.get(account=wallet.account, status="active")
+    active_wallet.status = "inactive"
+    active_wallet.save()
+    update_wallet_cache(active_wallet)
+    wallet.status = "active"
+    wallet.save()

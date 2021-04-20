@@ -60,3 +60,8 @@ class WalletAPI:
             "amount": amount
         }
         response = requests.post(cls.base_url + request_url, data=data)
+
+    @classmethod
+    def activate_wallet(cls, wallet_id):
+        request_url = f'wallet/activate/{wallet_id}/'
+        response = requests.get(cls.base_url + request_url)

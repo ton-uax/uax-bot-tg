@@ -38,3 +38,13 @@ class SendTXAPIView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         wallet_services.send_tx(request.data)
         return Response(status=status.HTTP_200_OK)
+
+
+class ActivateWalletAPIView(ListAPIView):
+    lookup_field = "wallet_id"
+    lookup_url_kwarg = "wallet_id"
+
+    def list(self, request, *args, **kwargs):
+        wallet_id = int(self.kwargs["wallet_id"])
+        wallet_services.activate_wallet(wallet_id)
+        return Response(status=status.HTTP_200_OK)

@@ -41,5 +41,6 @@ def cache_user(account: "account_models.TelegramAccount"):
     cache.set(f"wallets:{account.tg_id}", {}, timeout=None)
     cache.set(f"cache:{account.tg_id}", {
         "address_to": str,
-        "last_msg_id": int
+        "last_msg_id": int,
+        "wallet_menu_id": int
     }, timeout=None)
