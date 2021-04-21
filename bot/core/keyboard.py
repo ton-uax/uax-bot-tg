@@ -20,8 +20,7 @@ def wallet_menu():
         [
             [InlineKeyboardButton("Send", callback_data="menu-send"),
              InlineKeyboardButton("Receive", callback_data="menu-recive")],
-            [InlineKeyboardButton("Games", callback_data="menu-games"),
-             InlineKeyboardButton("Settings", callback_data="menu-settings")]
+            [InlineKeyboardButton("Settings", callback_data="menu-settings")]
         ]
     )
     return kb
