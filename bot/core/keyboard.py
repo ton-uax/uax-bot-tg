@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from pyrogram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from config import cache
+import random as r
 
 def first_start():
     kb = InlineKeyboardMarkup(
@@ -131,6 +132,33 @@ def settings_wallet(tg_id, wallet_id):
     )
     return kb
 
+
+def delete_wallet_1(tg_id, wallet_id):
+    kb_list = [[InlineKeyboardButton("Yes, delete the wallet", callback_data=f"delete_wallet-first-{wallet_id}")],
+          [InlineKeyboardButton("No", callback_data=f"wallet_settings-back_wallet-{wallet_id}")],
+          [InlineKeyboardButton("Nope, nevermind", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]]
+    kb = []
+    for i in range(3):
+        r.shuffle(kb_list)
+        bt = kb_list.pop()
+        kb.append(bt)
+
+    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")])
+    return InlineKeyboardMarkup(kb)
+
+
+def delete_wallet_2(tg_id, wallet_id):
+    kb_list = [[InlineKeyboardButton("Yes, I'm 100% shure!", callback_data=f"delete_wallet-delete-{wallet_id}")],
+          [InlineKeyboardButton("Hell no!", callback_data=f"wallet_settings-back_wallet-{wallet_id}")],
+          [InlineKeyboardButton("No!", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]]
+    kb = []
+    for i in range(3):
+        r.shuffle(kb_list)
+        bt = kb_list.pop()
+        kb.append(bt)
+
+    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")])
+    return InlineKeyboardMarkup(kb)
 
 
 def back_wallet_settings(tg_id, wallet_id):

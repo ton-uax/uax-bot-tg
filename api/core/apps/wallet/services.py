@@ -101,3 +101,17 @@ def edit_wallet_title(wallet_id: int, new_title):
     wallet.title = new_title
     wallet.save()
     update_wallet_cache(wallet)
+
+
+def delete_wallet(wallet_id: int):
+    wallet = wallet_models.Wallet.objects.get(id=wallet_id)
+    wallet.status = "deleted"
+    wallet.save()
+    wallets_cache = cache.get(f"wallets:{wallet.account.tg_id}")
+    del(wallets_cache[wallet.id])
+
+    active_wallet = wallet_models.Wallet.objects.filter(account=wallet.account).exclude(status="deleted")[0]
+    active_wallet.status = "active"
+    active_wallet.save()
+    wallets_cache[active_wallet.id]["status"] = "active"
+    cache.set(f"wallets:{wallet.account.tg_id}", wallets_cache, timeout=None)

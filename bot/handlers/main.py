@@ -194,6 +194,11 @@ def wallet_settings(cli, cb):
         msg = cb.message.reply(texts.edit_title(tg_id), reply_markup=kb.back_wallet_settings(tg_id, wallet_id))
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
+    elif action == "delete_wallet":
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.delete_wallet(tg_id, wallet_id), reply_markup=kb.delete_wallet_1(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
     elif action == "back_wallet":
         cache.change_user_flag(tg_id, "await_wallet_title", False)
         cb.message.edit(cb.message.text)
@@ -201,10 +206,29 @@ def wallet_settings(cli, cb):
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
+@Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("delete_wallet")))
+def delete_wallet(cli, cb):
+    tg_id = cb.from_user.id
+    action = cb.data.split('-')[1]
+    wallet_id = int(cb.data.split("-")[2])
+
+    if action == "first":
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.confirm_delete_wallet(tg_id, wallet_id), reply_markup=kb.delete_wallet_2(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+    if action == "delete":
+        cb.message.edit(cb.message.text)
+        cb.message.reply(texts.deleted_wallet(tg_id, wallet_id))
+        WalletAPI.delete_wallet(wallet_id)
+        msg = cb.message.reply(texts.manage_wallets(tg_id), reply_markup=kb.manage_wallets(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+
 @Client.on_message(~Filters.bot & Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["await_wallet_title"]))
 def wallet_title(cli, m):
     tg_id = m.from_user.id
     title = m.text
+    cache.change_user_flag(tg_id, "await_wallet_title", False)
     wallet_id = cache.read_user_cache(tg_id, "last_wallet_id")
     WalletAPI.edit_title(wallet_id, title)
     delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))

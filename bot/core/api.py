@@ -75,3 +75,7 @@ class WalletAPI:
         }
         response = requests.post(cls.base_url + request_url, data=data)
 
+    @classmethod
+    def delete_wallet(cls, wallet_id):
+        request_url = f'wallet/delete/{wallet_id}/'
+        response = requests.get(cls.base_url + request_url)

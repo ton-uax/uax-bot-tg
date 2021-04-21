@@ -55,3 +55,13 @@ class EditWalletTitleAPIView(GenericAPIView):
         data = request.data
         wallet_services.edit_wallet_title(data["id"], data["title"])
         return Response(status=status.HTTP_200_OK)
+
+
+class DeleteWalletAPIView(ListAPIView):
+    lookup_field = "wallet_id"
+    lookup_url_kwarg = "wallet_id"
+
+    def list(self, request, *args, **kwargs):
+        wallet_id = int(self.kwargs["wallet_id"])
+        wallet_services.delete_wallet(wallet_id)
+        return Response(status=status.HTTP_200_OK)

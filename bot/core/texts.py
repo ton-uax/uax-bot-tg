@@ -60,6 +60,25 @@ def show_phrase(tg_id, wallet_id):
           f"```{wallet['mnemonic']}```"
     return txt
 
+
 def edit_title(tg_id):
     txt = "OK. Send me the new title for your wallet."
+    return txt
+
+
+def delete_wallet(tg_id, wallet_id):
+    wallet = cache.get_wallet(tg_id, wallet_id)
+    txt = f"You are about to delete your wallet {wallet['title']}. Is that correct? "
+    return txt
+
+
+def confirm_delete_wallet(tg_id, wallet_id):
+    wallet = cache.get_wallet(tg_id, wallet_id)
+    txt = f"You are about to delete your wallet {wallet['title']}. Is that correct?\n\n" \
+          f"⚠️ This action cannot be undone. You will lose your money if you didn't save the seed phrase or private key."
+    return txt
+
+def deleted_wallet(tg_id, wallet_id):
+    wallet = cache.get_wallet(tg_id, wallet_id)
+    txt = f"wallet {wallet['title']} has been deleted."
     return txt
