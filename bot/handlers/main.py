@@ -35,9 +35,8 @@ def new_wallet(cli, cb):
     tg_id = cb.from_user.id
     cb.message.edit(cb.message.text)
     wallet = WalletAPI.create_wallet(tg_id)
-
+    cb.message.edit(cb.message.text)
     msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
-    delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
@@ -50,14 +49,21 @@ def wallet_menu(cli, cb):
 
         if wallet["balance"] > 1:
             cache.change_user_flag(tg_id, "await_to_address", True)
-            msg = cb.message.edit("Send me an address to send UAX:", reply_markup=kb.back_wallet())
+            cb.message.edit(cb.message.text)
+            msg = cb.message.reply("Send me an address to send UAX:", reply_markup=kb.back_wallet())
             cache.write_user_cache(tg_id, "last_msg_id", msg.message_id)
         else:
+            cb.message.edit(cb.message.text)
             cb.message.edit("Insufficient funds", reply_markup=kb.back_wallet())
+            cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
     elif btn == "recive":
-        cb.message.edit(wallet["address"], reply_markup=kb.back_wallet())
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(wallet["address"], reply_markup=kb.back_wallet())
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
     elif btn == "settings":
-        cb.message.edit(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
 @Client.on_callback_query(Filters.callback_data("back_wallet"))
@@ -65,7 +71,8 @@ def back_wallet(cli, cb):
     tg_id = cb.from_user.id
     cache.change_user_flag(tg_id, "await_to_address", False)
     cache.change_user_flag(tg_id, "await_to_amount", False)
-    msg = cb.message.edit(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
+    cb.message.edit(cb.message.text)
+    msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
@@ -79,7 +86,7 @@ def await_address_to(cli, m):
         cache.change_user_flag(tg_id, "await_to_address", False)
         cache.change_user_flag(tg_id, "await_to_amount", True)
         cache.write_user_cache(tg_id, "address_to", m.text)
-        msg = m.reply("Send me an amount in UAX", reply_markup=kb.max_amount(tg_id))
+        msg = m.reply("Enter amount in UAX", reply_markup=kb.max_amount(tg_id))
     else:
         msg = m.reply("invalid address", reply_markup=kb.back_wallet())
 
@@ -108,8 +115,9 @@ def send_max(cli, cb):
     wallet = cache.get_active_wallet(tg_id)
     amount = wallet["balance"] - 1
     cache.change_user_flag(tg_id, "await_to_amount", False)
-    cb.message.edit(texts.confirm_transaction(cache.read_user_cache(tg_id, "address_to"), amount), reply_markup=kb.confirm_tx(tg_id, amount))
-
+    cb.message.edit(cb.message.text)
+    msg = cb.message.reply(texts.confirm_transaction(cache.read_user_cache(tg_id, "address_to"), amount), reply_markup=kb.confirm_tx(tg_id, amount))
+    cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("confirm_tx")))
 def confirm_tx(cli, cb):
@@ -133,24 +141,40 @@ def settings(cli, cb):
     action = cb.data.split('-')[1]
 
     if action == "current_wallet":
-        cb.message.edit(texts.current_wallet(tg_id), reply_markup=kb.current_wallet(tg_id))
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.current_wallet(tg_id), reply_markup=kb.current_wallet(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
     elif action == "manage_wallets":
-        cb.message.edit(texts.manage_wallets(tg_id), reply_markup=kb.manage_wallets(tg_id))
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.manage_wallets(tg_id), reply_markup=kb.manage_wallets(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
     elif action == "select_wallet":
         wallet_id = cb.data.split('-')[2]
         WalletAPI.activate_wallet(wallet_id)
-        delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
-        msg = cb.message.edit(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
+    elif action == "add_wallet":
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.add_wallet(tg_id), reply_markup=kb.add_wallet(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+    elif action == "create_wallet":
+        new_wallet(cli, cb)
+
     elif action == "back_settings":
-        cb.message.edit(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
 
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("back_settings")))
 def back_settings(cli, cb):
     tg_id = cb.from_user.id
-    cb.message.edit(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+    cb.message.edit(cb.message.text)
+    msg = cb.message.reply(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
+    cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)

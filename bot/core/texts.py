@@ -2,10 +2,7 @@ from config import cache
 
 
 def wallet_menu(tg_id):
-    wallets = cache.get_user_wallets(tg_id)
-    for i in wallets:
-        if wallets[i]["status"] == "active":
-            wallet = wallets[i]
+    wallet = cache.get_active_wallet(tg_id)
 
     wallet_txt = f"Balance of {wallet['title']}:\n\n" \
                  f"~ {wallet['balance']} UAX"
@@ -40,4 +37,11 @@ def current_wallet(tg_id):
 
 def manage_wallets(tg_id):
     txt = "Here you can create a new wallet or manage your wallets."
+    return txt
+
+
+def add_wallet(tg_id):
+    txt = "Do you want to create a new wallet or add a wallet by seed phrase?\n\n" \
+          "⚠️ We store your private keys in an encrypted form signed with a unique key. " \
+          "But we strongly recommend that you keep your seed phrase securely."
     return txt

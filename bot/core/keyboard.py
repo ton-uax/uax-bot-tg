@@ -107,3 +107,14 @@ def manage_wallets(tg_id):
     kb.insert(0, [InlineKeyboardButton("🔐 Add Wallet", callback_data="settings-add_wallet")])
     kb.append([InlineKeyboardButton("« Back to Settings", callback_data="settings-back_settings")])
     return InlineKeyboardMarkup(kb)
+
+
+def add_wallet(tg_id):
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(f"Create wallet", callback_data=f"settings-create_wallet")],
+            [InlineKeyboardButton("🔐 Use Own Seed-phrase", callback_data="settings-seed_phrase")],
+            [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
+        ]
+    )
+    return kb

@@ -10,7 +10,7 @@ from django.core.cache import cache
 
 def create_wallet(tg_id: int) -> dict:
     account = account_models.TelegramAccount.objects.get(tg_id=tg_id)
-
+    wallets = wallet_models.Wallet.objects.filter(account=account, type_wallet="native")
     cli = TonCli(test=True)
 
     if account.master_mnemonic == "none":
@@ -19,11 +19,12 @@ def create_wallet(tg_id: int) -> dict:
         account.save()
     else:
         mnemonic = account.master_mnemonic
-        old_wallet = wallet_models.Wallet.objects.filter(tg_id=tg_id, status="active")
+        old_wallet = wallets.filter(status="active")[0]
         old_wallet.status = "inactive"
         old_wallet.save()
+        update_wallet_cache(old_wallet)
 
-    keypair = cli.mnemonic_derive_sign_keys(mnemonic)
+    keypair = cli.get_keypair_from_mnemonic(mnemonic, wallets.count())
     address = cli.deploy_with_key(keypair.public)
     wallet_title = get_new_title(account)
 
@@ -43,7 +44,7 @@ def get_new_title(account):
     wallets = wallet_models.Wallet.objects.filter(account=account).exclude(status="deleted")
 
     if wallets.exists():
-        return f"My Wallet #{wallets.count()+1}"
+        return f"My Wallet #{wallets.count() + 1}"
 
     return f"My Wallet #1"
 
@@ -51,21 +52,15 @@ def get_new_title(account):
 def update_wallet_cache(update_wallet):
     wallets_cache = cache.get(f"wallets:{update_wallet.account.tg_id}")
 
-    old_wallet = wallets_cache.get(update_wallet.id, None)
-
-    if old_wallet:
-        wallets_cache[update_wallet.id]["balance"] = update_wallet.balance
-        wallets_cache[update_wallet.id]["title"] = update_wallet.title
-    else:
-        wallets_cache[update_wallet.id] = {
-            "id": update_wallet.id,
-            "address": update_wallet.address,
-            "title": update_wallet.title,
-            "mnemonic": update_wallet.mnemonic,
-            "status": update_wallet.status,
-            "type_wallet": update_wallet.type_wallet,
-            "balance": update_wallet.balance
-        }
+    wallets_cache[update_wallet.id] = {
+        "id": update_wallet.id,
+        "address": update_wallet.address,
+        "title": update_wallet.title,
+        "mnemonic": update_wallet.mnemonic,
+        "status": update_wallet.status,
+        "type_wallet": update_wallet.type_wallet,
+        "balance": update_wallet.balance
+    }
 
     cache.set(f"wallets:{update_wallet.account.tg_id}", wallets_cache, timeout=None)
     return wallets_cache[update_wallet.id]
@@ -92,9 +87,10 @@ def activate_wallet(wallet_id):
     if wallet.status == "active":
         return
 
-    active_wallet = wallet_models.Wallet.objects.get(account=wallet.account, status="active")
+    active_wallet = wallet_models.Wallet.objects.filter(account=wallet.account, status="active")[0]
     active_wallet.status = "inactive"
     active_wallet.save()
     update_wallet_cache(active_wallet)
     wallet.status = "active"
     wallet.save()
+    update_wallet_cache(wallet)

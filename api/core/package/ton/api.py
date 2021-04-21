@@ -43,10 +43,10 @@ class TonCli(TonClient):
         return balance['_balance']
 
     def check_address(self, address):
-        code_hash = self.query_account({'id': {'eq': address}}, 'code_hash')
+        code_hash = self._query_account({'id': {'eq': address}}, 'code_hash')
         return code_hash == self.UAX_CODE_HASH
 
-    def query_account(self, query, fields: types.Union[str, types.List[str]]):
+    def _query_account(self, query, fields: types.Union[str, types.List[str]]):
         if isinstance(fields, types.List):
             fields = ','.join(fields)
         single_field = False
@@ -72,6 +72,19 @@ class TonCli(TonClient):
             types.Signer.Keys(keypair), wait=False
         )
 
+    def get_keypair_from_mnemonic(self, mnemonic, child_index):
+        master_xprv = self._get_master_xprv_from_mnemonic(mnemonic)
+        hdkey = self.crypto.hdkey_derive_from_xprv(
+            params=types.ParamsOfHDKeyDeriveFromXPrv(xprv=master_xprv, child_index=child_index, hardened=False))
+
+        public = self.crypto.hdkey_public_from_xprv(params=types.ParamsOfHDKeyPublicFromXPrv(xprv=hdkey.xprv)).public
+        secret = self.crypto.hdkey_secret_from_xprv(params=types.ParamsOfHDKeySecretFromXPrv(xprv=hdkey.xprv)).secret
+        return types.KeyPair(public=public, secret=secret)
+
+    def _get_master_xprv_from_mnemonic(self, mnemonic):
+        params = types.ParamsOfHDKeyXPrvFromMnemonic(phrase=mnemonic)
+        result = self.crypto.hdkey_xprv_from_mnemonic(params=params)
+        return result.xprv
 
     @staticmethod
     def _ABI(name):
