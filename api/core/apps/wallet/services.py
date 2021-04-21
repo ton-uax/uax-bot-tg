@@ -94,3 +94,10 @@ def activate_wallet(wallet_id):
     wallet.status = "active"
     wallet.save()
     update_wallet_cache(wallet)
+
+
+def edit_wallet_title(wallet_id: int, new_title):
+    wallet = wallet_models.Wallet.objects.get(id=wallet_id)
+    wallet.title = new_title
+    wallet.save()
+    update_wallet_cache(wallet)

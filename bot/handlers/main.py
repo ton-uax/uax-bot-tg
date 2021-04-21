@@ -119,6 +119,7 @@ def send_max(cli, cb):
     msg = cb.message.reply(texts.confirm_transaction(cache.read_user_cache(tg_id, "address_to"), amount), reply_markup=kb.confirm_tx(tg_id, amount))
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
+
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("confirm_tx")))
 def confirm_tx(cli, cb):
     tg_id = cb.from_user.id
@@ -164,12 +165,52 @@ def settings(cli, cb):
 
     elif action == "create_wallet":
         new_wallet(cli, cb)
+    elif action == "manage_wallet":
+        wallet_id = int(cb.data.split("-")[2])
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.settings_wallet(tg_id, wallet_id), reply_markup=kb.settings_wallet(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
     elif action == "back_settings":
         cb.message.edit(cb.message.text)
         msg = cb.message.reply(texts.wallet_settings(tg_id), reply_markup=kb.settings(tg_id))
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
+
+@Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("wallet_settings")))
+def wallet_settings(cli, cb):
+    tg_id = cb.from_user.id
+    action = cb.data.split('-')[1]
+    wallet_id = int(cb.data.split("-")[2])
+    if action == "show_phrase":
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.show_phrase(tg_id, wallet_id), reply_markup=kb.back_wallet_settings(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+    elif action == "edit_title":
+        cache.change_user_flag(tg_id, "await_wallet_title", True)
+        cache.write_user_cache(tg_id, "last_wallet_id", wallet_id)
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.edit_title(tg_id), reply_markup=kb.back_wallet_settings(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+    elif action == "back_wallet":
+        cache.change_user_flag(tg_id, "await_wallet_title", False)
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.settings_wallet(tg_id, wallet_id), reply_markup=kb.settings_wallet(tg_id, wallet_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+
+@Client.on_message(~Filters.bot & Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["await_wallet_title"]))
+def wallet_title(cli, m):
+    tg_id = m.from_user.id
+    title = m.text
+    wallet_id = cache.read_user_cache(tg_id, "last_wallet_id")
+    WalletAPI.edit_title(wallet_id, title)
+    delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
+
+    msg = m.reply(texts.settings_wallet(tg_id, wallet_id), reply_markup=kb.settings_wallet(tg_id, wallet_id))
+    cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("back_settings")))

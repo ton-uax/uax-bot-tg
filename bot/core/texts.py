@@ -45,3 +45,21 @@ def add_wallet(tg_id):
           "⚠️ We store your private keys in an encrypted form signed with a unique key. " \
           "But we strongly recommend that you keep your seed phrase securely."
     return txt
+
+
+def settings_wallet(tg_id, wallet_id):
+    wallet = cache.get_wallet(tg_id, wallet_id)
+    txt = f"Here it is: {wallet['title']}\n\n" \
+          f"What do you want to do with the wallet?"
+    return txt
+
+
+def show_phrase(tg_id, wallet_id):
+    wallet = cache.get_wallet(tg_id, wallet_id)
+    txt = f"Seed phrase for this wallet {wallet['title']}\n\n" \
+          f"```{wallet['mnemonic']}```"
+    return txt
+
+def edit_title(tg_id):
+    txt = "OK. Send me the new title for your wallet."
+    return txt

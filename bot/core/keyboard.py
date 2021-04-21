@@ -118,3 +118,25 @@ def add_wallet(tg_id):
         ]
     )
     return kb
+
+
+def settings_wallet(tg_id, wallet_id):
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(f"Show Seed Phrase", callback_data=f"wallet_settings-show_phrase-{wallet_id}")],
+            [InlineKeyboardButton("Edit Title", callback_data=f"wallet_settings-edit_title-{wallet_id}"),
+             InlineKeyboardButton("Delete Wallet", callback_data=f"wallet_settings-delete_wallet-{wallet_id}")],
+            [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
+        ]
+    )
+    return kb
+
+
+
+def back_wallet_settings(tg_id, wallet_id):
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]
+        ]
+    )
+    return kb

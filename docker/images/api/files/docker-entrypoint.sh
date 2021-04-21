@@ -21,6 +21,7 @@ if [ "CORE_DATABASE_WAIT" ]; then
     python /src/api/manage.py makemigrations wallet
     python /src/api/manage.py makemigrations account
     python /src/api/manage.py migrate --noinput
+    python /src/api/manage.py create_cache
 fi
 
 exec "$@"

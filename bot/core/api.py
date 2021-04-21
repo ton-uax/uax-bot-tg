@@ -65,3 +65,13 @@ class WalletAPI:
     def activate_wallet(cls, wallet_id):
         request_url = f'wallet/activate/{wallet_id}/'
         response = requests.get(cls.base_url + request_url)
+
+    @classmethod
+    def edit_title(cls, wallet_id, title):
+        request_url = f'wallet/editTitle/'
+        data = {
+            "id": wallet_id,
+            "title": title
+        }
+        response = requests.post(cls.base_url + request_url, data=data)
+

@@ -32,6 +32,11 @@ def get_active_wallet(tg_id: int):
             return wallets[i]
 
 
+def get_wallet(tg_id: int, wallet_id: int):
+    wallets = get_user_wallets(tg_id)
+    return wallets[wallet_id]
+
+
 def read_user_cache(tg_id: int, option: str):
     return pickle.loads(cache.get(f":1:cache:{tg_id}"))[option]
 

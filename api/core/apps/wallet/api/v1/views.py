@@ -48,3 +48,10 @@ class ActivateWalletAPIView(ListAPIView):
         wallet_id = int(self.kwargs["wallet_id"])
         wallet_services.activate_wallet(wallet_id)
         return Response(status=status.HTTP_200_OK)
+
+
+class EditWalletTitleAPIView(GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        wallet_services.edit_wallet_title(data["id"], data["title"])
+        return Response(status=status.HTTP_200_OK)
