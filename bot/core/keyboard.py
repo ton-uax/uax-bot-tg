@@ -8,7 +8,7 @@ def first_start():
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("Create wallet", callback_data="new_wallet"),
-             InlineKeyboardButton("Add wallet", callback_data="add_wallet")]
+             InlineKeyboardButton("Add wallet", callback_data="settings-seed_phrase")]
         ]
     )
 
@@ -20,7 +20,9 @@ def wallet_menu():
         [
             [InlineKeyboardButton("Send", callback_data="menu-send"),
              InlineKeyboardButton("Receive", callback_data="menu-recive")],
-            [InlineKeyboardButton("Settings", callback_data="menu-settings")]
+            [InlineKeyboardButton("Buy", url="https://kuna.io/"),
+             InlineKeyboardButton("Settings", callback_data="menu-settings")],
+            [InlineKeyboardButton("💎 Earn", callback_data="qqqqqq")]
         ]
     )
     return kb
@@ -164,6 +166,14 @@ def back_wallet_settings(tg_id, wallet_id):
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]
+        ]
+    )
+    return kb
+
+def back_add_menu(tg_id):
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("« Back", callback_data=f"settings-add_wallet")]
         ]
     )
     return kb

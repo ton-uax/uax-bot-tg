@@ -35,7 +35,6 @@ def new_wallet(cli, cb):
     tg_id = cb.from_user.id
     cb.message.edit(cb.message.text)
     wallet = WalletAPI.create_wallet(tg_id)
-    cb.message.edit(cb.message.text)
     msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
@@ -126,7 +125,7 @@ def confirm_tx(cli, cb):
     action = cb.data.split('-')[1]
     address_to = cache.read_user_cache(tg_id, "address_to")
     if action == "send":
-        amount = cb.data.split('-')[2]
+        amount = int(cb.data.split('-')[2])
         WalletAPI.send_tx(tg_id, address_to, amount)
         cb.message.edit(texts.success_tx(amount, address_to))
         delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
@@ -154,17 +153,25 @@ def settings(cli, cb):
     elif action == "select_wallet":
         wallet_id = cb.data.split('-')[2]
         WalletAPI.activate_wallet(wallet_id)
-        cb.message.edit(cb.message.text)
+        delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
+        delete_inline_kb(cli, tg_id, cb.message.message_id)
         msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
     elif action == "add_wallet":
+        cache.change_user_flag(tg_id, "await_mnemonic", False)
         cb.message.edit(cb.message.text)
         msg = cb.message.reply(texts.add_wallet(tg_id), reply_markup=kb.add_wallet(tg_id))
         cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
     elif action == "create_wallet":
         new_wallet(cli, cb)
+    elif action == "seed_phrase":
+        cache.change_user_flag(tg_id, "await_mnemonic", True)
+        cb.message.edit(cb.message.text)
+        msg = cb.message.reply(texts.enter_mnemonic(tg_id))
+        cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
     elif action == "manage_wallet":
         wallet_id = int(cb.data.split("-")[2])
         cb.message.edit(cb.message.text)
@@ -234,6 +241,19 @@ def wallet_title(cli, m):
     delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
 
     msg = m.reply(texts.settings_wallet(tg_id, wallet_id), reply_markup=kb.settings_wallet(tg_id, wallet_id))
+    cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
+
+
+@Client.on_message(~Filters.bot & Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["await_mnemonic"]))
+def await_mnemonic(cli, m):
+    tg_id = m.from_user.id
+    mnemonic = m.text
+    if not WalletAPI.add_from_mnemonic(tg_id, mnemonic):
+        return m.reply("Bad phrase", reply_markup=kb.back_add_menu(tg_id))
+
+    cache.change_user_flag(tg_id, "await_mnemonic", False)
+    delete_inline_kb(cli, tg_id, cache.read_user_cache(tg_id, "wallet_menu_id"))
+    msg = m.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
 
 

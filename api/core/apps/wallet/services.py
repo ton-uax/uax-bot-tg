@@ -40,6 +40,71 @@ def create_wallet(tg_id: int) -> dict:
     return update_wallet_cache(new_wallet)
 
 
+def add_wallet_from_mnemonic(tg_id, mnemonic):
+    if not _check_mnemonic(mnemonic):
+        return
+
+    account = account_models.TelegramAccount.objects.get(tg_id=tg_id)
+    wallets = wallet_models.Wallet.objects.filter(account=account)
+
+    if account.master_mnemonic == "none":
+        account.master_mnemonic = mnemonic
+        account.save()
+    else:
+        old_wallet = wallets.filter(status="active")[0]
+        old_wallet.status = "inactive"
+        old_wallet.save()
+        update_wallet_cache(old_wallet)
+
+    cli = TonCli(test=True)
+    n = 0
+    for child_index in range(99999):
+        try:
+            keypair = cli.get_keypair_from_mnemonic(mnemonic, child_index)
+            address = cli.get_address(keypair.public)
+            if not cli.check_address(address):
+                n += 1
+                if n > 50:
+                    break
+                continue
+            n = 0
+            check_ = wallets.filter(address=address).exists()
+            if check_:
+                continue
+
+            wallet_title = get_new_title(account)
+            balance = cli.get_uax_balance(address)
+            new_wallet = wallet_models.Wallet.objects.create(
+                account=account,
+                address=address,
+                title=wallet_title,
+                public=keypair.public,
+                secret=keypair.secret,
+                mnemonic=mnemonic,
+                status="inactive",
+                balance=int(balance)
+            )
+            update_wallet_cache(new_wallet)
+
+        except Exception as e:
+            print(e)
+            break
+
+    active_wallet = wallet_models.Wallet.objects.filter(account=account, mnemonic=mnemonic)[0]
+    active_wallet.status = "active"
+    active_wallet.save()
+
+    update_wallet_cache(active_wallet)
+    return True
+
+
+def _check_mnemonic(mnemonic):
+    cli = TonCli(test=True)
+    params = types.ParamsOfMnemonicVerify(phrase=mnemonic)
+    return cli.crypto.mnemonic_verify(params=params).valid
+
+
+
 def get_new_title(account):
     wallets = wallet_models.Wallet.objects.filter(account=account).exclude(status="deleted")
 

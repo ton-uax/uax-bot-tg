@@ -7,7 +7,7 @@ from core.apps.wallet import services as wallet_services
 
 @celery_app.task
 def check_balance():
-    wallets = wallet_models.Wallet.objects.filter(status="active")
+    wallets = wallet_models.Wallet.objects.all().exclude(status="deleted")
 
     cli = TonCli(test=True)
     bot = HelpBot(session_name="refill_session")
@@ -21,7 +21,7 @@ def check_balance():
                 refill = new_balance - wallet.balance
                 wallet.balance = new_balance
                 update_wallets.append(wallet)
-                bot.send_msg(wallet.account.tg_id, f"Your wallet is replenished with {refill} UAX")
+                bot.send_msg(wallet.account.tg_id, f"Your wallet **{wallet.title}** is replenished with **{refill}** UAX", open_wallet=True, wallet_id=wallet.id)
             elif new_balance < wallet.balance:
                 wallet.balance = new_balance
                 update_wallets.append(wallet)

@@ -82,3 +82,7 @@ def deleted_wallet(tg_id, wallet_id):
     wallet = cache.get_wallet(tg_id, wallet_id)
     txt = f"wallet {wallet['title']} has been deleted."
     return txt
+
+def enter_mnemonic(tg_id):
+    txt = "Send me a seed phrase or private key:"
+    return txt

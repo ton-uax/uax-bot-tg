@@ -65,3 +65,11 @@ class DeleteWalletAPIView(ListAPIView):
         wallet_id = int(self.kwargs["wallet_id"])
         wallet_services.delete_wallet(wallet_id)
         return Response(status=status.HTTP_200_OK)
+
+
+class AddFromPhraseAPIView(GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        if not wallet_services.add_wallet_from_mnemonic(data["tg_id"], data["mnemonic"]):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK)

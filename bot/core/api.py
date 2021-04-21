@@ -79,3 +79,14 @@ class WalletAPI:
     def delete_wallet(cls, wallet_id):
         request_url = f'wallet/delete/{wallet_id}/'
         response = requests.get(cls.base_url + request_url)
+
+    @classmethod
+    def add_from_mnemonic(cls, tg_id, mnemonic):
+        request_url = f'wallet/addFromPhrase/'
+        data = {
+            "tg_id": tg_id,
+            "mnemonic": mnemonic
+        }
+        response = requests.post(cls.base_url + request_url, data=data)
+        if response.status_code == 200:
+            return True

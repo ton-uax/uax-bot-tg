@@ -38,13 +38,21 @@ class TonCli(TonClient):
         return keypair
 
     def get_uax_balance(self, address):
-        boc = self._wait_account(address)
+        try:
+            boc = self._wait_account(address)
+        except:
+            return 0
         balance = self._run_getter(address, self._ABI("TokenWallet"), boc, "_balance")
         return balance['_balance']
 
     def check_address(self, address):
         code_hash = self._query_account({'id': {'eq': address}}, 'code_hash')
         return code_hash == self.UAX_CODE_HASH
+
+    def get_address(self, pubkey, wc=0):
+        account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
+        return f'{wc}:{account.id}'
+
 
     def _query_account(self, query, fields: types.Union[str, types.List[str]]):
         if isinstance(fields, types.List):
