@@ -79,8 +79,8 @@ services:
       - uax_static_volume:/src/uax_public/static
     environment:
       - TOS=--agree-tos
-      - EMAIL=
-      - DOMAINS=
+      - EMAIL=sergost1337@gmail.com
+      - DOMAINS=116.203.188.245
 
 volumes:
   uax_pg_data:
