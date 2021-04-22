@@ -39,9 +39,13 @@ def cache_user(account: "account_models.TelegramAccount"):
         "await_wallet_title": False,
         "await_mnemonic": False}, timeout=None)
     cache.set(f"wallets:{account.tg_id}", {}, timeout=None)
+
+    user_cache = cache.get(f"cache:{account.tg_id}", {})
+
     cache.set(f"cache:{account.tg_id}", {
-        "address_to": str,
-        "last_wallet_id": int,
-        "last_msg_id": int,
-        "wallet_menu_id": int
-    }, timeout=None)
+            "address_to": user_cache.get("address_to", str),
+            "last_wallet_id": user_cache.get("last_wallet_id", int),
+            "last_msg_id": user_cache.get("last_msg_id", int),
+            "wallet_menu_id": user_cache.get("wallet_menu_id", int),
+            "chat_mode": user_cache.get("chat_mode", "Historical")
+        }, timeout=None)

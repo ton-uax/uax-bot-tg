@@ -3,7 +3,7 @@ from core.apps.wallet import models as wallet_models
 from core.package.ton.api import TonCli
 from core.package.helpbot.api.pyroAPI import HelpBot
 from core.apps.wallet import services as wallet_services
-
+from django.core.cache import cache
 
 @celery_app.task
 def check_balance():
@@ -29,3 +29,10 @@ def check_balance():
             wallet_services.update_wallet_cache(wallet)
 
     wallet_models.Wallet.objects.bulk_update(update_wallets, fields=["balance"])
+
+
+@celery_app.task
+def check_fee():
+    cli = TonCli(test=True)
+    fee = cli.get_fee()
+    cache.set("fee", {"fee": fee}, timeout=None)

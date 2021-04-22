@@ -1,0 +1,255 @@
+{
+	"ABI version": 2,
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "addTokenWallet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"a","type":"address"},
+				{"name":"balance","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "grantTokens",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"addr","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "registerTokenWallet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"balance","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initMedium",
+			"inputs": [
+				{"name":"initialEmission","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferTokens",
+			"inputs": [
+				{"name":"to","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateTransferFee",
+			"inputs": [
+				{"name":"val","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "claimTransferFee",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "issue",
+			"inputs": [
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "raze",
+			"inputs": [
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "approve",
+			"inputs": [
+				{"name":"eventID","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "reject",
+			"inputs": [
+				{"name":"eventID","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "propose",
+			"inputs": [
+				{"name":"eType","type":"uint8"},
+				{"name":"value","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "proposeEvent",
+			"inputs": [
+				{"name":"eid","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "commit",
+			"inputs": [
+				{"name":"eventID","type":"uint32"},
+				{"name":"st","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "notifyOwners",
+			"inputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"e","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getStats",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"transfers","type":"uint32"},
+				{"name":"supply","type":"uint32"},
+				{"name":"wallets","type":"uint32"},
+				{"name":"transferFee","type":"uint8"},
+				{"name":"accruedFee","type":"uint32"},
+				{"name":"totalFeeClaimed","type":"uint32"}
+			]
+		},
+		{
+			"name": "initMember",
+			"inputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"id","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "meet",
+			"inputs": [
+				{"name":"id","type":"uint16"},
+				{"name":"a","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateEnv",
+			"inputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"logLevel","type":"uint16"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getEnv",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"console","type":"address"},
+				{"name":"eventLog","type":"address"},
+				{"name":"root","type":"address"},
+				{"name":"medium","type":"address"},
+				{"name":"dashboard","type":"address"},
+				{"name":"logLevel","type":"uint16"}
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "_clients",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_clients","type":"map(address,uint16)"}
+			]
+		},
+		{
+			"name": "_onApproval",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"_onApproval","type":"map(uint32,tuple)"}
+			]
+		},
+		{
+			"name": "_archived",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"_archived","type":"map(uint32,tuple)"}
+			]
+		},
+		{
+			"name": "_proposals",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"createdAt","type":"uint32"},{"name":"validUntil","type":"uint32"},{"name":"confirmedAt","type":"uint32"},{"name":"state","type":"uint8"},{"name":"signsAt","type":"uint8"},{"name":"signs","type":"uint16"},{"name":"signsReq","type":"uint8"},{"name":"value","type":"uint32"},{"name":"actor","type":"uint16"}],"name":"_proposals","type":"map(uint32,tuple)"}
+			]
+		},
+		{
+			"name": "_ledger",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"balance","type":"uint32"},{"name":"addr","type":"address"},{"name":"lastAccessed","type":"uint32"}],"name":"_ledger","type":"map(uint16,tuple)"}
+			]
+		},
+		{
+			"name": "_owners",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_owners","type":"map(uint8,address)"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}

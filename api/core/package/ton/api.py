@@ -13,9 +13,10 @@ class TonCli(TonClient):
         self.console = ' '
         if test:
             net_base_url = DEVNET_BASE_URL
-            self.CONSOLE = "0:d6bad31b76a3de3af8290efabb2aa7fa7f3953fa7ec7a63174f5a0b18ab5e8eb"
-            self.ROOT = "0:79c86fb401d74706321b6328866723cbe154689927de0eb9a14d2ccc8fb9aa8d"
+            self.CONSOLE = "0:10677a33d3a5edcb4b39a6beb43a124e73c62c70cbb99ed4f4e9d4b29c22f8be"
+            self.ROOT = "0:397b4df5409c29d1c5ccc00f94706b9f025054262a509c827a9b99c270b99128"
             self.UAX_CODE_HASH = "5a2e419f76e68aa8fbd8f6dfba9c25c5fedc82c76801ab62c87b0ae7a738b4f2"
+            self.MEDIUM = "0:f4e70848721e239245c6ab07bdae957021fa1a2ae421fdbc3f7e0467b5cec99e"
         self.config = types.ClientConfig()
         self.config.network.server_address = net_base_url
         super().__init__(config=self.config, is_async=False)
@@ -53,6 +54,16 @@ class TonCli(TonClient):
         account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
         return f'{wc}:{account.id}'
 
+    def get_fee(self):
+        params = {}
+        msg = self.abi.encode_message(
+            params=types.ParamsOfEncodeMessage(
+                abi=self._ABI("Medium"), signer=types.Signer.NoSigner(), address=self.MEDIUM,
+                call_set=types.CallSet(function_name="getStats", input=params)))
+        response = self.tvm.run_tvm(
+            params=types.ParamsOfRunTvm(
+                message=msg.message, abi=self._ABI("Medium"), account=self._get_account(self.MEDIUM))).decoded.output
+        return response["transferFee"]
 
     def _query_account(self, query, fields: types.Union[str, types.List[str]]):
         if isinstance(fields, types.List):

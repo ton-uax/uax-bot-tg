@@ -15,6 +15,16 @@ def first_start():
     return kb
 
 
+def reply(tg_id):
+    kb = ReplyKeyboardMarkup(
+        [
+            ["💳 My Wallet"],
+            ["🆔 My Address"]
+        ], resize_keyboard=True
+    )
+    return kb
+
+
 def wallet_menu():
     kb = InlineKeyboardMarkup(
         [
@@ -39,7 +49,8 @@ def back_wallet():
 
 def max_amount(tg_id):
     wallet = cache.get_active_wallet(tg_id)
-    max_amount = Decimal(wallet['balance']) - Decimal(1)
+    fee = cache.get_fee()
+    max_amount = Decimal(wallet['balance']) - Decimal(fee)
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(f"Use Max - {max_amount} UAX", callback_data=f"send_max-{max_amount}")],
@@ -62,11 +73,12 @@ def confirm_tx(tg_id, amount):
 
 def settings(tg_id):
     wallet = cache.get_active_wallet(tg_id)
-
+    mode = cache.read_user_cache(tg_id, "chat_mode")
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(f"Current Wallet: {wallet['title']}", callback_data=f"settings-current_wallet")],
             [InlineKeyboardButton("Manage Wallets", callback_data="settings-manage_wallets")],
+            [InlineKeyboardButton(f"Chat mode: {mode}", callback_data=f"settings-chat_mode-{mode}")],
             [InlineKeyboardButton("« Back to Wallet", callback_data="back_wallet")]
         ]
     )

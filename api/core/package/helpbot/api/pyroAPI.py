@@ -14,7 +14,7 @@ class HelpBot(Client):
 
         try:
             if open_wallet:
-                app.send_message(tg_id, text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open", callback_data=f"settings-select_wallet-{wallet_id}")]]))
+                app.send_message(tg_id, text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open", callback_data=f"open_wallet-{wallet_id}")]]))
             else:
                 app.send_message(tg_id, text)
         except Exception as e:

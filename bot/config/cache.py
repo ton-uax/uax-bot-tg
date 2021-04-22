@@ -45,3 +45,10 @@ def write_user_cache(tg_id: int, option: str, value: int or str):
     user_cache = pickle.loads(cache.get(f":1:cache:{tg_id}"))
     user_cache[option] = value
     cache.set(f":1:cache:{tg_id}", pickle.dumps(user_cache))
+
+
+def get_fee():
+    fee = pickle.loads(cache.get(f":1:fee"))
+    if fee:
+        return int(fee["fee"])
+    return 1

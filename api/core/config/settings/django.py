@@ -137,6 +137,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "core.apps.wallet.tasks.check_balance",
         "schedule": 5
     },
+    "check_fee": {
+        "task": "core.apps.wallet.tasks.check_fee",
+        "schedule": 30
+    },
 
 }
 
