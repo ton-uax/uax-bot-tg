@@ -135,11 +135,17 @@ def add_wallet(tg_id):
 
 
 def settings_wallet(tg_id, wallet_id):
+    wallets = cache.get_user_wallets(tg_id)
+    wallet_lock = ""
+    wl_cb = ""
+    if len(wallets) == 1:
+        wallet_lock = " 🔒"
+        wl_cb = "dasw"
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(f"Show Seed Phrase", callback_data=f"wallet_settings-show_phrase-{wallet_id}")],
             [InlineKeyboardButton("Edit Title", callback_data=f"wallet_settings-edit_title-{wallet_id}"),
-             InlineKeyboardButton("Delete Wallet", callback_data=f"wallet_settings-delete_wallet-{wallet_id}")],
+             InlineKeyboardButton(f"{wallet_lock} Delete Wallet", callback_data=f"wallet_settings-delete_wallet{wl_cb}-{wallet_id}")],
             [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
         ]
     )

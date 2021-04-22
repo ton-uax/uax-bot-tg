@@ -334,6 +334,7 @@ def wallet_settings(cli, cb):
                 "on_callback")
 
     elif action == "delete_wallet":
+
         new_msg(cli, cb, tg_id,
                 texts.delete_wallet(tg_id, wallet_id),
                 kb.delete_wallet_1(tg_id, wallet_id),
