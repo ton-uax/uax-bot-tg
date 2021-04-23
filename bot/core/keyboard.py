@@ -191,7 +191,7 @@ def back_wallet_settings(tg_id, wallet_id):
 def back_add_menu(tg_id):
     kb = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("« Back", callback_data=f"settings-add_wallet")]
+            [InlineKeyboardButton("« Back", callback_data=f"back_add_wallet")]
         ]
     )
     return kb

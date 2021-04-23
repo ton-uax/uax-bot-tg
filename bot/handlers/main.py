@@ -400,7 +400,13 @@ def await_mnemonic(cli, m):
 
     mnemonic = m.text
     if not WalletAPI.add_from_mnemonic(tg_id, mnemonic):
-        return m.reply("Bad phrase", reply_markup=kb.back_add_menu(tg_id))
+        return new_msg(cli, m, tg_id,
+                "Bad phrase",
+                kb.back_add_menu(tg_id),
+                "wallet_menu_id",
+                "wallet_menu_id",
+                "on_message")
+
 
     if len(check_) == 0:
         m.reply("Welcome to UAX Wallet", reply_markup=kb.reply(tg_id))
