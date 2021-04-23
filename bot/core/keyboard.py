@@ -195,3 +195,12 @@ def back_add_menu(tg_id):
         ]
     )
     return kb
+
+
+def back_add_wallet(tg_id):
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("« Back", callback_data=f"back_add_wallet")]
+        ]
+    )
+    return kb

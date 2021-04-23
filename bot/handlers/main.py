@@ -274,7 +274,7 @@ def settings(cli, cb):
 
         new_msg(cli, cb, tg_id,
                 texts.enter_mnemonic(tg_id),
-                None,
+                kb.back_add_wallet(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
@@ -421,6 +421,27 @@ def back_settings(cli, cb):
     new_msg(cli, cb, tg_id,
             texts.wallet_settings(tg_id),
             kb.settings(tg_id),
+            "wallet_menu_id",
+            "wallet_menu_id",
+            "on_callback")
+
+
+@Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("back_add_wallet")))
+def back_add_wallet(cli, cb):
+    tg_id = cb.from_user.id
+    wallets = cache.get_user_wallets(tg_id)
+    cache.change_user_flag(tg_id, "await_mnemonic", False)
+    if len(wallets) == 0:
+        return new_msg(cli, cb, tg_id,
+                "Do you want to create a wallet or add an existing one",
+                kb.first_start(),
+                "wallet_menu_id",
+                "wallet_menu_id",
+                "on_callback")
+
+    new_msg(cli, cb, tg_id,
+            texts.add_wallet(tg_id),
+            kb.add_wallet(tg_id),
             "wallet_menu_id",
             "wallet_menu_id",
             "on_callback")
