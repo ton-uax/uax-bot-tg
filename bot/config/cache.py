@@ -38,6 +38,9 @@ def get_wallet(tg_id: int, wallet_id: int):
 
 
 def read_user_cache(tg_id: int, option: str):
+    pckl_cache = cache.get(f":1:cache:{tg_id}")
+    if not pckl_cache:
+        return False
     return pickle.loads(cache.get(f":1:cache:{tg_id}"))[option]
 
 

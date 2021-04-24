@@ -5,6 +5,8 @@ from core import keyboard as kb
 from core import texts
 from config import cache
 
+create_wallet_flag = Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["create_wallet"])
+
 
 def new_msg(cli, m, tg_id, text, kb, cache_read, cache_write, type):
     user_set = cache.read_user_cache(tg_id, "chat_mode")
@@ -37,19 +39,19 @@ def delete_inline_kb(cli: Client, tg_id: int, msg_id: int):
         pass
 
 
-@Client.on_message(Filters.regex(r"^💳 My Wallet"))
+@Client.on_message(Filters.regex(r"^💳 My Wallet") & ~create_wallet_flag)
 def my_w(cli, m):
     tg_id = m.from_user.id
     new_msg(cli, m, tg_id, texts.wallet_menu(tg_id), kb.wallet_menu(), "wallet_menu_id", "wallet_menu_id", "on_message")
 
 
-@Client.on_message(Filters.regex(r"^🆔 My Address"))
+@Client.on_message(Filters.regex(r"^🆔 My Address") & ~create_wallet_flag)
 def my_adr(cli, m):
     wallet = cache.get_active_wallet(m.from_user.id)
     m.reply(wallet["address"])
 
 
-@Client.on_message(Filters.command('start'))
+@Client.on_message(Filters.command('start') & ~create_wallet_flag)
 def start(cli, m):
     tg_id = m.from_user.id
 
@@ -57,6 +59,13 @@ def start(cli, m):
     response = WalletAPI.check_user(tg_id)
 
     if response.status_code == 200:
+        wallets = cache.get_user_wallets(tg_id)
+        if len(wallets) == 0:
+            return new_msg(cli, m, tg_id,
+                           'Do you want to create a wallet or add an existing one',
+                           kb.none_wallet_start(), "wallet_menu_id", "wallet_menu_id",
+                    "on_message")
+
         new_msg(cli, m, tg_id, texts.wallet_menu(tg_id), kb.wallet_menu(), "wallet_menu_id", "wallet_menu_id",
                 "on_message")
     if response.status_code == 404:
@@ -67,15 +76,16 @@ def start(cli, m):
 @Client.on_callback_query(Filters.callback_data("new_wallet"))
 def new_wallet(cli, cb):
     tg_id = cb.from_user.id
-    check_ = cache.get_user_wallets(tg_id)
+    cache.change_user_flag(tg_id, "create_wallet", True)
+
     cb.message.edit(cb.message.text)
     cli.answer_callback_query(cb.id, "Wait a moment. I'm creating a wallet for you.", show_alert=True)
     wallet = WalletAPI.create_wallet(tg_id)
-    if len(check_) == 0:
-        cb.message.reply("Welcome to UAX Wallet", reply_markup=kb.reply(tg_id))
+
+    cb.message.reply("Welcome to UAX Wallet", reply_markup=kb.reply(tg_id))
     msg = cb.message.reply(texts.wallet_menu(tg_id), reply_markup=kb.wallet_menu())
     cache.write_user_cache(tg_id, "wallet_menu_id", msg.message_id)
-
+    cache.change_user_flag(tg_id, "create_wallet", False)
 
 
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("menu")))
@@ -133,6 +143,13 @@ def back_wallet(cli, cb):
     cache.change_user_flag(tg_id, "await_to_address", False)
     cache.change_user_flag(tg_id, "await_to_amount", False)
     cache.change_user_flag(tg_id, "await_wallet_title", False)
+    wallets = cache.get_user_wallets(tg_id)
+
+    if len(wallets) == 0:
+        return new_msg(cli, cb, tg_id,
+                       'Do you want to create a wallet or add an existing one',
+                       kb.none_wallet_start(), "wallet_menu_id", "wallet_menu_id",
+                       "on_callback")
 
     new_msg(cli, cb, tg_id,
             texts.wallet_menu(tg_id),
@@ -232,6 +249,9 @@ def settings(cli, cb):
     action = cb.data.split('-')[1]
 
     if action == "current_wallet":
+        wallets = cache.get_user_wallets(tg_id)
+        if len(wallets) == 0:
+            return cli.answer_callback_query(cb.id, "You don't have wallets to switch between them")
         new_msg(cli, cb, tg_id,
                 texts.current_wallet(tg_id),
                 kb.current_wallet(tg_id),
@@ -440,7 +460,7 @@ def back_add_wallet(cli, cb):
     if len(wallets) == 0:
         return new_msg(cli, cb, tg_id,
                 "Do you want to create a wallet or add an existing one",
-                kb.first_start(),
+                kb.none_wallet_start(),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")

@@ -19,10 +19,12 @@ def create_wallet(tg_id: int) -> dict:
         account.save()
     else:
         mnemonic = account.master_mnemonic
-        old_wallet = wallets.filter(status="active")[0]
-        old_wallet.status = "inactive"
-        old_wallet.save()
-        update_wallet_cache(old_wallet)
+        old_wallet = wallets.filter(status="active")
+        if old_wallet.exists():
+            old_wallet[0].status = "inactive"
+            old_wallet[0].save()
+            update_wallet_cache(old_wallet[0])
+
 
     keypair = cli.get_keypair_from_mnemonic(mnemonic, wallets.count())
     address = cli.deploy_with_key(keypair.public)
@@ -175,8 +177,11 @@ def delete_wallet(wallet_id: int):
     wallets_cache = cache.get(f"wallets:{wallet.account.tg_id}")
     del(wallets_cache[wallet.id])
 
-    active_wallet = wallet_models.Wallet.objects.filter(account=wallet.account).exclude(status="deleted")[0]
-    active_wallet.status = "active"
-    active_wallet.save()
-    wallets_cache[active_wallet.id]["status"] = "active"
+    active_wallet = wallet_models.Wallet.objects.filter(account=wallet.account).exclude(status="deleted")
+    if active_wallet.exists():
+        active_wallet = active_wallet[0]
+        active_wallet.status = "active"
+        active_wallet.save()
+        wallets_cache[active_wallet.id]["status"] = "active"
+
     cache.set(f"wallets:{wallet.account.tg_id}", wallets_cache, timeout=None)

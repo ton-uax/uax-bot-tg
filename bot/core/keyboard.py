@@ -9,6 +9,19 @@ def first_start():
         [
             [InlineKeyboardButton("Create wallet", callback_data="new_wallet"),
              InlineKeyboardButton("Add wallet", callback_data="settings-seed_phrase")]
+
+        ]
+    )
+
+    return kb
+
+
+def none_wallet_start():
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Create wallet", callback_data="new_wallet"),
+             InlineKeyboardButton("Add wallet", callback_data="settings-seed_phrase")],
+            [InlineKeyboardButton("Settings", callback_data="menu-settings")]
         ]
     )
 
@@ -73,10 +86,16 @@ def confirm_tx(tg_id, amount):
 
 def settings(tg_id):
     wallet = cache.get_active_wallet(tg_id)
+
+    wallet_title = "None"
+    wallets = cache.get_user_wallets(tg_id)
+    if len(wallets) != 0:
+        wallet_title = wallet["title"]
+
     mode = cache.read_user_cache(tg_id, "chat_mode")
     kb = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(f"Current Wallet: {wallet['title']}", callback_data=f"settings-current_wallet")],
+            [InlineKeyboardButton(f"Current Wallet: {wallet_title}", callback_data=f"settings-current_wallet")],
             [InlineKeyboardButton("Manage Wallets", callback_data="settings-manage_wallets")],
             [InlineKeyboardButton(f"Chat mode: {mode}", callback_data=f"settings-chat_mode-{mode}")],
             [InlineKeyboardButton("« Back to Wallet", callback_data="back_wallet")]
@@ -135,17 +154,13 @@ def add_wallet(tg_id):
 
 
 def settings_wallet(tg_id, wallet_id):
-    wallets = cache.get_user_wallets(tg_id)
-    wallet_lock = ""
-    wl_cb = ""
-    if len(wallets) == 1:
-        wallet_lock = " 🔒"
-        wl_cb = "dasw"
+
+
     kb = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(f"Show Seed Phrase", callback_data=f"wallet_settings-show_phrase-{wallet_id}")],
             [InlineKeyboardButton("Edit Title", callback_data=f"wallet_settings-edit_title-{wallet_id}"),
-             InlineKeyboardButton(f"{wallet_lock} Delete Wallet", callback_data=f"wallet_settings-delete_wallet{wl_cb}-{wallet_id}")],
+             InlineKeyboardButton(f"Delete Wallet", callback_data=f"wallet_settings-delete_wallet-{wallet_id}")],
             [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
         ]
     )

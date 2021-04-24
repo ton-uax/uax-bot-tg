@@ -37,7 +37,8 @@ def cache_user(account: "account_models.TelegramAccount"):
         "await_to_amount": False,
         "await_to_address": False,
         "await_wallet_title": False,
-        "await_mnemonic": False}, timeout=None)
+        "await_mnemonic": False,
+        "create_wallet": False}, timeout=None)
     cache.set(f"wallets:{account.tg_id}", {}, timeout=None)
 
     user_cache = cache.get(f"cache:{account.tg_id}", {})
