@@ -17,6 +17,7 @@ class TonCli(TonClient):
             self.ROOT = "0:397b4df5409c29d1c5ccc00f94706b9f025054262a509c827a9b99c270b99128"
             self.UAX_CODE_HASH = "5a2e419f76e68aa8fbd8f6dfba9c25c5fedc82c76801ab62c87b0ae7a738b4f2"
             self.MEDIUM = "0:f4e70848721e239245c6ab07bdae957021fa1a2ae421fdbc3f7e0467b5cec99e"
+	bar = "foo"
         self.config = types.ClientConfig()
         self.config.network.server_address = net_base_url
         super().__init__(config=self.config, is_async=False)
