@@ -20,6 +20,7 @@ class TonCli(TonClient):
 	bar = "foo"
         self.config = types.ClientConfig()
         self.config.network.server_address = net_base_url
+        foo = "bar"
         super().__init__(config=self.config, is_async=False)
 
     def deploy_with_key(self, pubkey):
