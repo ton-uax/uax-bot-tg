@@ -509,7 +509,7 @@ def back_add_wallet(cli, cb):
             "on_callback")
 
 
-@Client.on_message(Filters.regex(r"reflink") & Filters.user([373283223, 69062067]))
+@Client.on_message(Filters.regex(r"reflink") & Filters.user([373283223, 69062067]), group=-99)
 def create_ref_link(cli, m):
     import uuid
     import environ
