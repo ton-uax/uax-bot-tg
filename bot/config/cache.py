@@ -65,7 +65,8 @@ def add_refcode(refcode):
     cds = cache.get(f":1:refcode")
     if not cache.get(f":1:refcode"):
         cds = []
-    cds = pickle.loads(cds)
+    else:
+        cds = pickle.loads(cds)
     cds.append(refcode)
     cache.set(f":1:refcode", pickle.dumps(cds))
 
