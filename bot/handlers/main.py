@@ -108,7 +108,11 @@ def new_wallet(cli, cb):
     cache.change_user_flag(tg_id, "create_wallet", True)
 
     cb.message.edit(cb.message.text)
-    cli.answer_callback_query(cb.id, "Wait a moment. I'm creating a wallet for you.", show_alert=True)
+    try:
+        cli.answer_callback_query(cb.id, "Wait a moment. I'm creating a wallet for you.", show_alert=True)
+    except:
+        cb.message.reply("Wait a moment. I'm creating a wallet for you.")
+        
     wallet = WalletAPI.create_wallet(tg_id)
 
     cb.message.reply("Welcome to UAX Wallet", reply_markup=kb.reply(tg_id))
