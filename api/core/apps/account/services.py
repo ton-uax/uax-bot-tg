@@ -29,6 +29,7 @@ def cache_user(account: "account_models.TelegramAccount"):
         username=account.username,
         first_name=account.first_name,
         last_name=account.last_name,
+        master_mnemonic=account.master_mnemonic
 
     )
 

@@ -95,8 +95,8 @@ def settings(tg_id):
     mode = cache.read_user_cache(tg_id, "chat_mode")
     kb = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(f"Current Wallet: {wallet_title}", callback_data=f"settings-current_wallet")],
-            [InlineKeyboardButton("Manage Wallets", callback_data="settings-manage_wallets")],
+            #[InlineKeyboardButton(f"Current Wallet: {wallet_title}", callback_data=f"settings-current_wallet")],
+            [InlineKeyboardButton("Manage Wallet", callback_data="settings-manage_wallet")],
             [InlineKeyboardButton(f"Chat mode: {mode}", callback_data=f"settings-chat_mode-{mode}")],
             [InlineKeyboardButton("« Back to Wallet", callback_data="back_wallet")]
         ]
@@ -133,72 +133,88 @@ def current_wallet(tg_id):
     kb.append([InlineKeyboardButton("« Back to Settings", callback_data="settings-back_settings")])
     return InlineKeyboardMarkup(kb)
 
-
-def manage_wallets(tg_id):
-    kb = gen_wallets_kblist(tg_id, "settings-manage_wallet")
-
-    kb.insert(0, [InlineKeyboardButton("🔐 Add Wallet", callback_data="settings-add_wallet")])
-    kb.append([InlineKeyboardButton("« Back to Settings", callback_data="settings-back_settings")])
-    return InlineKeyboardMarkup(kb)
+#
+# def manage_wallets(tg_id):
+#     kb = gen_wallets_kblist(tg_id, "settings-manage_wallet")
+#
+#     kb.insert(0, [InlineKeyboardButton("🔐 Add Wallet", callback_data="settings-add_wallet")])
+#     kb.append([InlineKeyboardButton("« Back to Settings", callback_data="settings-back_settings")])
+#     return InlineKeyboardMarkup(kb)
 
 
 def add_wallet(tg_id):
-    kb = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton(f"Create wallet", callback_data=f"settings-create_wallet")],
+    wallets = cache.get_user_wallets(tg_id)
+
+    kb_list = [
             [InlineKeyboardButton("🔐 Use Own Seed-phrase", callback_data="settings-seed_phrase")],
-            [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
+            [InlineKeyboardButton("« Back to manage Wallet", callback_data="settings-manage_wallet")]
         ]
-    )
-    return kb
+    profile = cache.get_user_profile(tg_id)
+    if profile["master_mnemonic"] == "none":
+        kb_list.insert(0, [InlineKeyboardButton(f"Create wallet", callback_data=f"settings-create_wallet")])
+
+    return InlineKeyboardMarkup(kb_list)
 
 
-def settings_wallet(tg_id, wallet_id):
+def after_delete_wallet(tg_id):
+    wallets = cache.get_user_wallets(tg_id)
 
+    kb_list = [
+            [InlineKeyboardButton("🔐 Use Own Seed-phrase", callback_data="settings-seed_phrase")]
+        ]
+    profile = cache.get_user_profile(tg_id)
+    if profile["master_mnemonic"] == "none":
+        kb_list.insert(0, [InlineKeyboardButton(f"Create wallet", callback_data=f"settings-create_wallet")])
+
+    return InlineKeyboardMarkup(kb_list)
+
+
+def settings_wallet(tg_id):
 
     kb = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(f"Show Seed Phrase", callback_data=f"wallet_settings-show_phrase-{wallet_id}")],
-            [InlineKeyboardButton("Edit Title", callback_data=f"wallet_settings-edit_title-{wallet_id}"),
-             InlineKeyboardButton(f"Delete Wallet", callback_data=f"wallet_settings-delete_wallet-{wallet_id}")],
-            [InlineKeyboardButton("« Back to Wallets list", callback_data="settings-manage_wallets")]
+            [InlineKeyboardButton("🔐 Add Wallet", callback_data="settings-add_wallet")],
+            [InlineKeyboardButton(f"Show Seed Phrase", callback_data=f"wallet_settings-show_phrase")],
+            [InlineKeyboardButton("Edit Title", callback_data=f"wallet_settings-edit_title"),
+             InlineKeyboardButton(f"Delete Wallet", callback_data=f"wallet_settings-delete_wallet")],
+            [InlineKeyboardButton("« Back to settings", callback_data="menu-settings")]
         ]
     )
     return kb
 
 
-def delete_wallet_1(tg_id, wallet_id):
-    kb_list = [[InlineKeyboardButton("Yes, delete the wallet", callback_data=f"delete_wallet-first-{wallet_id}")],
-          [InlineKeyboardButton("No", callback_data=f"wallet_settings-back_wallet-{wallet_id}")],
-          [InlineKeyboardButton("Nope, nevermind", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]]
+def delete_wallet_1(tg_id):
+    kb_list = [[InlineKeyboardButton("Yes, delete the wallet", callback_data=f"delete_wallet-first")],
+          [InlineKeyboardButton("No", callback_data=f"wallet_settings-back_wallet")],
+          [InlineKeyboardButton("Nope, nevermind", callback_data=f"wallet_settings-back_wallet")]]
     kb = []
     for i in range(3):
         r.shuffle(kb_list)
         bt = kb_list.pop()
         kb.append(bt)
 
-    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")])
+    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet")])
     return InlineKeyboardMarkup(kb)
 
 
-def delete_wallet_2(tg_id, wallet_id):
-    kb_list = [[InlineKeyboardButton("Yes, I'm 100% shure!", callback_data=f"delete_wallet-delete-{wallet_id}")],
-          [InlineKeyboardButton("Hell no!", callback_data=f"wallet_settings-back_wallet-{wallet_id}")],
-          [InlineKeyboardButton("No!", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]]
+def delete_wallet_2(tg_id):
+    kb_list = [[InlineKeyboardButton("Yes, I'm 100% shure!", callback_data=f"delete_wallet-delete")],
+          [InlineKeyboardButton("Hell no!", callback_data=f"wallet_settings-back_wallet")],
+          [InlineKeyboardButton("No!", callback_data=f"wallet_settings-back_wallet")]]
     kb = []
     for i in range(3):
         r.shuffle(kb_list)
         bt = kb_list.pop()
         kb.append(bt)
 
-    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")])
+    kb.append([InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet")])
     return InlineKeyboardMarkup(kb)
 
 
-def back_wallet_settings(tg_id, wallet_id):
+def back_wallet_settings(tg_id):
     kb = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet-{wallet_id}")]
+            [InlineKeyboardButton("« Back to Wallet", callback_data=f"wallet_settings-back_wallet")]
         ]
     )
     return kb

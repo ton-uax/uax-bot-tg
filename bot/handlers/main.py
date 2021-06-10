@@ -5,7 +5,20 @@ from core import keyboard as kb
 from core import texts
 from config import cache
 
-create_wallet_flag = Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["create_wallet"])
+#create_wallet_flag = Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["create_wallet"])
+
+
+def _create_wallet_flag(_, m):
+    flags = cache.get_user_flags(m.from_user.id)
+    if not flags:
+        return False
+    return flags["create_wallet"]
+
+
+create_wallet_flag = Filters.create(
+    name="filterr",
+    func=_create_wallet_flag
+)
 
 
 def new_msg(cli, m, tg_id, text, kb, cache_read, cache_write, type):
@@ -60,17 +73,33 @@ def start(cli, m):
 
     if response.status_code == 200:
         wallets = cache.get_user_wallets(tg_id)
+
         if len(wallets) == 0:
-            return new_msg(cli, m, tg_id,
-                           'Do you want to create a wallet or add an existing one',
-                           kb.none_wallet_start(), "wallet_menu_id", "wallet_menu_id",
-                    "on_message")
+            profile = cache.get_user_profile(tg_id)
+            if profile["master_mnemonic"] == "none":
+                return new_msg(cli, m, tg_id,
+                               'Do you want to create a wallet or add an existing one',
+                               kb.after_delete_wallet(tg_id), "wallet_menu_id", "wallet_menu_id",
+                        "on_message")
+            else:
+                return new_msg(cli, m, tg_id,
+                               'Do you want to add an existing one wallet',
+                               kb.after_delete_wallet(tg_id), "wallet_menu_id", "wallet_menu_id",
+                               "on_message")
 
         new_msg(cli, m, tg_id, texts.wallet_menu(tg_id), kb.wallet_menu(), "wallet_menu_id", "wallet_menu_id",
                 "on_message")
     if response.status_code == 404:
-        WalletAPI.registration_user(m.from_user)
-        m.reply('Do you want to create a wallet or add an existing one', reply_markup=kb.first_start())
+        if len(m.command) > 1:
+            refcode = m.command[1]
+            refcodes = cache.get_refcodes()
+            if refcode in refcodes:
+                WalletAPI.registration_user(m.from_user)
+                m.reply('Do you want to create a wallet or add an existing one', reply_markup=kb.first_start())
+                cache.del_refcode(refcode)
+                return
+
+        m.reply("Sorry, but the entrance is by invitation only")
 
 
 @Client.on_callback_query(Filters.callback_data("new_wallet"))
@@ -259,13 +288,13 @@ def settings(cli, cb):
                 "wallet_menu_id",
                 "on_callback")
 
-    elif action == "manage_wallets":
-        new_msg(cli, cb, tg_id,
-                texts.manage_wallets(tg_id),
-                kb.manage_wallets(tg_id),
-                "wallet_menu_id",
-                "wallet_menu_id",
-                "on_callback")
+    # elif action == "manage_wallet":
+    #     new_msg(cli, cb, tg_id,
+    #             texts.manage_wallets(tg_id),
+    #             kb.manage_wallets(tg_id),
+    #             "wallet_menu_id",
+    #             "wallet_menu_id",
+    #             "on_callback")
 
     elif action == "select_wallet":
         wallet_id = cb.data.split('-')[2]
@@ -300,10 +329,9 @@ def settings(cli, cb):
                 "on_callback")
 
     elif action == "manage_wallet":
-        wallet_id = int(cb.data.split("-")[2])
         new_msg(cli, cb, tg_id,
-                texts.settings_wallet(tg_id, wallet_id),
-                kb.settings_wallet(tg_id, wallet_id),
+                texts.settings_wallet(tg_id),
+                kb.settings_wallet(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
@@ -334,30 +362,29 @@ def settings(cli, cb):
 def wallet_settings(cli, cb):
     tg_id = cb.from_user.id
     action = cb.data.split('-')[1]
-    wallet_id = int(cb.data.split("-")[2])
     if action == "show_phrase":
         new_msg(cli, cb, tg_id,
-                texts.show_phrase(tg_id, wallet_id),
-                kb.back_wallet_settings(tg_id, wallet_id),
+                texts.show_phrase(tg_id),
+                kb.back_wallet_settings(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
 
     elif action == "edit_title":
         cache.change_user_flag(tg_id, "await_wallet_title", True)
-        cache.write_user_cache(tg_id, "last_wallet_id", wallet_id)
+        #cache.write_user_cache(tg_id, "last_wallet_id", wallet_id)
         new_msg(cli, cb, tg_id,
                 texts.edit_title(tg_id),
-                kb.back_wallet_settings(tg_id, wallet_id),
+                kb.back_wallet_settings(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
 
     elif action == "delete_wallet":
-
+        wallet_id = cache.get_active_wallet(tg_id)["id"]
         new_msg(cli, cb, tg_id,
-                texts.delete_wallet(tg_id, wallet_id),
-                kb.delete_wallet_1(tg_id, wallet_id),
+                texts.delete_wallet(tg_id),
+                kb.delete_wallet_1(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
@@ -365,8 +392,8 @@ def wallet_settings(cli, cb):
     elif action == "back_wallet":
         cache.change_user_flag(tg_id, "await_wallet_title", False)
         new_msg(cli, cb, tg_id,
-                texts.settings_wallet(tg_id, wallet_id),
-                kb.settings_wallet(tg_id, wallet_id),
+                texts.settings_wallet(tg_id),
+                kb.settings_wallet(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
@@ -376,25 +403,34 @@ def wallet_settings(cli, cb):
 def delete_wallet(cli, cb):
     tg_id = cb.from_user.id
     action = cb.data.split('-')[1]
-    wallet_id = int(cb.data.split("-")[2])
 
     if action == "first":
         new_msg(cli, cb, tg_id,
-                texts.confirm_delete_wallet(tg_id, wallet_id),
-                kb.delete_wallet_2(tg_id, wallet_id),
+                texts.confirm_delete_wallet(tg_id),
+                kb.delete_wallet_2(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
                 "on_callback")
 
     if action == "delete":
-        cb.message.reply(texts.deleted_wallet(tg_id, wallet_id))
+        cb.message.reply(texts.deleted_wallet(tg_id))
+        wallet_id = cache.get_active_wallet(tg_id)["id"]
         WalletAPI.delete_wallet(wallet_id)
+
+        wallets = cache.get_user_wallets(tg_id)
+
         new_msg(cli, cb, tg_id,
-                texts.manage_wallets(tg_id),
-                kb.manage_wallets(tg_id),
+                # texts.manage_wallets(tg_id),
+                # kb.manage_wallets(tg_id),
+                # "wallet_menu_id",
+                # "wallet_menu_id",
+                # "on_callback"
+                texts.after_del_wallet(tg_id),
+                kb.after_delete_wallet(tg_id),
                 "wallet_menu_id",
                 "wallet_menu_id",
-                "on_callback")
+                "on_callback"
+        )
 
 
 @Client.on_message(~Filters.bot & Filters.create(lambda _, m: cache.get_user_flags(m.from_user.id)["await_wallet_title"]))
@@ -427,7 +463,6 @@ def await_mnemonic(cli, m):
                 "wallet_menu_id",
                 "on_message")
 
-
     if len(check_) == 0:
         m.reply("Welcome to UAX Wallet", reply_markup=kb.reply(tg_id))
 
@@ -438,6 +473,7 @@ def await_mnemonic(cli, m):
             "wallet_menu_id",
             "wallet_menu_id",
             "on_message")
+
 
 
 @Client.on_callback_query(Filters.create(lambda _, cb: cb.data.startswith("back_settings")))
@@ -471,3 +507,18 @@ def back_add_wallet(cli, cb):
             "wallet_menu_id",
             "wallet_menu_id",
             "on_callback")
+
+
+@Client.on_message(Filters.regex(r"reflink") & Filters.user([373283223, 69062067]))
+def create_ref_link(cli, m):
+    import uuid
+    import environ
+    import os
+    ROOT = environ.Path(__file__) - 1
+    env_file = os.path.join(ROOT, 'config', 'settings', '.env')
+    env = environ.Env()
+    environ.Env.read_env(env_file)
+    bot_username = env.str('BOT_USERNAME')
+    h = uuid.uuid4().hex
+    cache.add_refcode(h)
+    m.reply(f"t.me/{bot_username}?start={h}")

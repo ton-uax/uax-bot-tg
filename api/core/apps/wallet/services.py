@@ -10,23 +10,33 @@ from django.core.cache import cache
 
 def create_wallet(tg_id: int) -> dict:
     account = account_models.TelegramAccount.objects.get(tg_id=tg_id)
-    wallets = wallet_models.Wallet.objects.filter(account=account, type_wallet="native")
+    wallets = wallet_models.Wallet.objects.filter(account=account)
     cli = TonCli(test=True)
 
-    if account.master_mnemonic == "none":
-        mnemonic = cli.create_mnemonic_from_random()
-        account.master_mnemonic = mnemonic
-        account.save()
-    else:
-        mnemonic = account.master_mnemonic
-        old_wallet = wallets.filter(status="active")
-        if old_wallet.exists():
-            old_wallet[0].status = "inactive"
-            old_wallet[0].save()
-            update_wallet_cache(old_wallet[0])
+    mnemonic = cli.create_mnemonic_from_random()
+    account.master_mnemonic = mnemonic
+    account.save()
 
+    old_wallet = wallets.filter(status="active")
+    if old_wallet.exists():
+        delete_wallet(old_wallet[0].id)
+        # old_wallet[0].status = "inactive"
+        # old_wallet[0].save()
+        # update_wallet_cache(old_wallet[0])
 
-    keypair = cli.get_keypair_from_mnemonic(mnemonic, wallets.count())
+    # if account.master_mnemonic == "none":
+    #     mnemonic = cli.create_mnemonic_from_random()
+    #     account.master_mnemonic = mnemonic
+    #     account.save()
+    # else:
+    #     mnemonic = account.master_mnemonic
+    #     old_wallet = wallets.filter(status="active")
+    #     if old_wallet.exists():
+    #         old_wallet[0].status = "inactive"
+    #         old_wallet[0].save()
+    #         update_wallet_cache(old_wallet[0])
+
+    keypair = cli.mnemonic_derive_sign_keys(mnemonic)#get_keypair_from_mnemonic(mnemonic, 0)
     address = cli.deploy_with_key(keypair.public)
     wallet_title = get_new_title(account)
 
@@ -49,55 +59,97 @@ def add_wallet_from_mnemonic(tg_id, mnemonic):
     account = account_models.TelegramAccount.objects.get(tg_id=tg_id)
     wallets = wallet_models.Wallet.objects.filter(account=account)
 
-    if account.master_mnemonic == "none":
-        account.master_mnemonic = mnemonic
-        account.save()
-    else:
-        old_wallet = wallets.filter(status="active")[0]
-        old_wallet.status = "inactive"
-        old_wallet.save()
-        update_wallet_cache(old_wallet)
+    # if account.master_mnemonic == "none":
+    #     account.master_mnemonic = mnemonic
+    #     account.save()
+    # else:
+    #     old_wallet = wallets.filter(status="active")[0]
+    #     old_wallet.status = "inactive"
+    #     old_wallet.save()
+    #     update_wallet_cache(old_wallet)
+
+    if wallets.exists():
+        if wallets.filter(mnemonic=mnemonic).exists():
+            if wallets.filter(mnemonic=mnemonic)[0].status == "active":
+                return True
+
+            old_wallet = wallets.filter(status="active")
+            if old_wallet.exists():
+                old_wallet = wallets.filter(status="active")[0]
+                delete_wallet(old_wallet.id)
+                #update_wallet_cache(old_wallet)
+            new_wallet = wallets.filter(mnemonic=mnemonic)[0]
+            new_wallet.status = "active"
+            new_wallet.save()
+            update_wallet_cache(new_wallet)
+            return True
+
+        old_wallet = wallets.filter(status="active")
+
+        if old_wallet.exists():
+            old_wallet = old_wallet[0]
+            old_wallet.status = "inactive"
+            old_wallet.save()
+            update_wallet_cache(old_wallet)
 
     cli = TonCli(test=True)
-    n = 0
-    for child_index in range(99999):
-        try:
-            keypair = cli.get_keypair_from_mnemonic(mnemonic, child_index)
-            address = cli.get_address(keypair.public)
-            if not cli.check_address(address):
-                n += 1
-                if n > 50:
-                    break
-                continue
-            n = 0
-            check_ = wallets.filter(address=address).exists()
-            if check_:
-                continue
-
-            wallet_title = get_new_title(account)
-            balance = cli.get_uax_balance(address)
-            new_wallet = wallet_models.Wallet.objects.create(
-                account=account,
-                address=address,
-                title=wallet_title,
-                public=keypair.public,
-                secret=keypair.secret,
-                mnemonic=mnemonic,
-                status="inactive",
-                balance=int(balance)
-            )
-            update_wallet_cache(new_wallet)
-
-        except Exception as e:
-            print(e)
-            break
-
-    active_wallet = wallet_models.Wallet.objects.filter(account=account, mnemonic=mnemonic)[0]
-    active_wallet.status = "active"
-    active_wallet.save()
-
-    update_wallet_cache(active_wallet)
+    keypair = cli.mnemonic_derive_sign_keys(mnemonic)#cli.get_keypair_from_mnemonic(mnemonic, 0)
+    address = cli.get_address(keypair.public)
+    wallet_title = get_new_title(account)
+    balance = cli.get_uax_balance(address)
+    new_wallet = wallet_models.Wallet.objects.create(
+        account=account,
+        address=address,
+        title=wallet_title,
+        public=keypair.public,
+        secret=keypair.secret,
+        mnemonic=mnemonic,
+        type_wallet="vendor",
+        balance=int(balance)
+    )
+    update_wallet_cache(new_wallet)
+    #
+    # active_wallet = wallet_models.Wallet.objects.filter(account=account, mnemonic=mnemonic)[0]
+    # active_wallet.status = "active"
+    # active_wallet.save()
+    #
+    # update_wallet_cache(active_wallet)
     return True
+
+    # n = 0
+    # for child_index in range(99999):
+    #     try:
+    #         keypair = cli.get_keypair_from_mnemonic(mnemonic, child_index)
+    #         address = cli.get_address(keypair.public)
+    #         if not cli.check_address(address):
+    #             n += 1
+    #             if n > 50:
+    #                 break
+    #             continue
+    #         n = 0
+    #         check_ = wallets.filter(address=address).exists()
+    #         if check_:
+    #             continue
+    #
+    #         wallet_title = get_new_title(account)
+    #         balance = cli.get_uax_balance(address)
+    #         new_wallet = wallet_models.Wallet.objects.create(
+    #             account=account,
+    #             address=address,
+    #             title=wallet_title,
+    #             public=keypair.public,
+    #             secret=keypair.secret,
+    #             mnemonic=mnemonic,
+    #             status="inactive",
+    #             balance=int(balance)
+    #         )
+    #         update_wallet_cache(new_wallet)
+    #
+    #     except Exception as e:
+    #         print(e)
+    #         break
+
+
 
 
 def _check_mnemonic(mnemonic):

@@ -32,9 +32,13 @@ def get_active_wallet(tg_id: int):
             return wallets[i]
 
 
-def get_wallet(tg_id: int, wallet_id: int):
+def get_wallet(tg_id: int):
+    # wallets = get_user_wallets(tg_id)
+    # return wallets[wallet_id]
     wallets = get_user_wallets(tg_id)
-    return wallets[wallet_id]
+    for i in wallets:
+        if wallets[i]["status"] == "active":
+            return wallets[i]
 
 
 def read_user_cache(tg_id: int, option: str):
@@ -55,3 +59,28 @@ def get_fee():
     if fee:
         return int(fee["fee"])
     return 1
+
+
+def add_refcode(refcode):
+    cds = cache.get(f":1:refcode")
+    if not cache.get(f":1:refcode"):
+        cds = []
+    cds = pickle.loads(cds)
+    cds.append(refcode)
+    cache.set(f":1:refcode", pickle.dumps(cds))
+
+
+def get_refcodes():
+    return pickle.loads(cache.get(f":1:refcode"))
+
+
+def del_refcode(refcode):
+    cds = cache.get(f":1:refcode")
+    if refcode in pickle.loads(cds):
+        cds = pickle.loads(cds)
+        cds.remove(refcode)
+        cache.set(f":1:refcode", pickle.dumps(cds))
+
+
+def get_user_profile(tg_id):
+    return pickle.loads(cache.get(":1:users"))[tg_id]

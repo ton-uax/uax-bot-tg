@@ -47,15 +47,15 @@ def add_wallet(tg_id):
     return txt
 
 
-def settings_wallet(tg_id, wallet_id):
-    wallet = cache.get_wallet(tg_id, wallet_id)
+def settings_wallet(tg_id):
+    wallet = cache.get_wallet(tg_id)
     txt = f"Here it is: {wallet['title']}\n\n" \
           f"What do you want to do with the wallet?"
     return txt
 
 
-def show_phrase(tg_id, wallet_id):
-    wallet = cache.get_wallet(tg_id, wallet_id)
+def show_phrase(tg_id):
+    wallet = cache.get_wallet(tg_id)
     txt = f"Seed phrase for this wallet {wallet['title']}\n\n" \
           f"```{wallet['mnemonic']}```"
     return txt
@@ -66,23 +66,38 @@ def edit_title(tg_id):
     return txt
 
 
-def delete_wallet(tg_id, wallet_id):
-    wallet = cache.get_wallet(tg_id, wallet_id)
+def delete_wallet(tg_id):
+    wallet = cache.get_wallet(tg_id)
     txt = f"You are about to delete your wallet {wallet['title']}. Is that correct? "
     return txt
 
 
-def confirm_delete_wallet(tg_id, wallet_id):
-    wallet = cache.get_wallet(tg_id, wallet_id)
+def confirm_delete_wallet(tg_id):
+    wallet = cache.get_wallet(tg_id)
     txt = f"You are about to delete your wallet {wallet['title']}. Is that correct?\n\n" \
           f"⚠️ This action cannot be undone. You will lose your money if you didn't save the seed phrase or private key."
     return txt
 
-def deleted_wallet(tg_id, wallet_id):
-    wallet = cache.get_wallet(tg_id, wallet_id)
+
+def deleted_wallet(tg_id):
+    wallet = cache.get_wallet(tg_id)
     txt = f"wallet {wallet['title']} has been deleted."
     return txt
 
+
 def enter_mnemonic(tg_id):
     txt = "Send me a seed phrase or private key:"
+    return txt
+
+
+def after_del_wallet(tg_id):
+    profile = cache.get_user_profile(tg_id)
+    if profile["master_mnemonic"] == "none":
+        txt = "Do you want to add a wallet by seed phrase?\n\n" \
+              "⚠️ We store your private keys in an encrypted form signed with a unique key. " \
+              "But we strongly recommend that you keep your seed phrase securely."
+    else:
+        txt = "Do you want to create a new wallet or add a wallet by seed phrase?\n\n" \
+              "⚠️ We store your private keys in an encrypted form signed with a unique key. " \
+              "But we strongly recommend that you keep your seed phrase securely."
     return txt

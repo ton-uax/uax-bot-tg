@@ -1,128 +1,7 @@
 {
 	"ABI version": 2,
-	"header": ["time"],
+	"header": ["pubkey", "time", "expire"],
 	"functions": [
-		{
-			"name": "deploy",
-			"inputs": [
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onDeploy",
-			"inputs": [
-				{"name":"id","type":"uint16"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "updateImage",
-			"inputs": [
-				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"image","type":"tuple"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setOwnerKeys",
-			"inputs": [
-				{"name":"keys","type":"uint256[]"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "getOwnerKeys",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"keys","type":"uint256[]"}
-			]
-		},
-		{
-			"name": "grant",
-			"inputs": [
-				{"name":"addr","type":"address"},
-				{"name":"value","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "purgeRepo",
-			"inputs": [
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "getSis",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"sis","type":"map(uint8,cell)"}
-			]
-		},
-		{
-			"name": "upgrade",
-			"inputs": [
-				{"name":"c","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "initMember",
-			"inputs": [
-				{"name":"console","type":"address"},
-				{"name":"eventLog","type":"address"},
-				{"name":"root","type":"address"},
-				{"name":"medium","type":"address"},
-				{"name":"dashboard","type":"address"},
-				{"name":"id","type":"uint16"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "meet",
-			"inputs": [
-				{"name":"id","type":"uint16"},
-				{"name":"a","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "updateMode",
-			"inputs": [
-				{"name":"logLevel","type":"uint16"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "getMode",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"logLevel","type":"uint16"}
-			]
-		},
-		{
-			"name": "getEnv",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"console","type":"address"},
-				{"name":"eventLog","type":"address"},
-				{"name":"root","type":"address"},
-				{"name":"medium","type":"address"},
-				{"name":"dashboard","type":"address"}
-			]
-		},
 		{
 			"name": "constructor",
 			"inputs": [
@@ -131,27 +10,69 @@
 			]
 		},
 		{
-			"name": "_clients",
+			"name": "calcRootAddress",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"_clients","type":"map(address,uint16)"}
+				{"name":"root","type":"address"}
 			]
 		},
 		{
-			"name": "_images",
+			"name": "deployRoot",
 			"inputs": [
+				{"name":"ownerKeys","type":"uint256[]"}
 			],
 			"outputs": [
-				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"initialBalance","type":"uint8"},{"name":"stateInit","type":"cell"}],"name":"_images","type":"map(uint8,tuple)"}
+				{"name":"rootAddr","type":"address"}
 			]
 		},
 		{
-			"name": "_deployed",
+			"name": "onRootDeployed",
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"index","type":"uint8"},{"name":"name","type":"bytes"},{"name":"addr","type":"address"},{"name":"ts","type":"uint32"}],"name":"_deployed","type":"map(uint8,tuple)"}
+			]
+		},
+		{
+			"name": "uploadCode",
+			"inputs": [
+				{"name":"index","type":"uint8"},
+				{"components":[{"name":"code","type":"cell"},{"name":"tons","type":"uint16"},{"name":"name","type":"bytes"}],"name":"image","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transfer",
+			"inputs": [
+				{"name":"addr","type":"address"},
+				{"name":"value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"index","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "repo",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"code","type":"cell"},{"name":"tons","type":"uint16"},{"name":"name","type":"bytes"}],"name":"repo","type":"map(uint8,tuple)"}
+			]
+		},
+		{
+			"name": "deployed",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"deployed","type":"map(uint8,address)"}
 			]
 		}
 	],

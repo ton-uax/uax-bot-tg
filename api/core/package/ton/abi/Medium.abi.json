@@ -1,48 +1,46 @@
 {
 	"ABI version": 2,
-	"header": ["time"],
+	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
-			"name": "addTokenWallet",
+			"name": "registerTokenWallet",
 			"inputs": [
-				{"name":"id","type":"uint16"},
-				{"name":"a","type":"address"},
-				{"name":"balance","type":"uint32"}
+				{"name":"id","type":"uint16"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "grantTokens",
+			"name": "registerOwner",
 			"inputs": [
 				{"name":"id","type":"uint16"},
-				{"name":"addr","type":"address"},
+				{"name":"walletId","type":"uint16"},
+				{"name":"walletAddress","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "requestTransfer",
+			"inputs": [
+				{"name":"to","type":"address"},
 				{"name":"val","type":"uint32"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "registerTokenWallet",
-			"inputs": [
-				{"name":"id","type":"uint16"},
-				{"name":"balance","type":"uint32"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "initMedium",
-			"inputs": [
-				{"name":"initialEmission","type":"uint32"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "transferTokens",
+			"name": "processTransfer",
 			"inputs": [
 				{"name":"to","type":"address"},
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "accrue",
+			"inputs": [
 				{"name":"val","type":"uint32"}
 			],
 			"outputs": [
@@ -66,7 +64,7 @@
 			]
 		},
 		{
-			"name": "issue",
+			"name": "mint",
 			"inputs": [
 				{"name":"val","type":"uint32"}
 			],
@@ -74,8 +72,17 @@
 			]
 		},
 		{
-			"name": "raze",
+			"name": "burn",
 			"inputs": [
+				{"name":"val","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdraw",
+			"inputs": [
+				{"name":"id","type":"uint16"},
 				{"name":"val","type":"uint32"}
 			],
 			"outputs": [
@@ -107,14 +114,6 @@
 			]
 		},
 		{
-			"name": "proposeEvent",
-			"inputs": [
-				{"name":"eid","type":"uint32"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "commit",
 			"inputs": [
 				{"name":"eventID","type":"uint32"},
@@ -129,6 +128,17 @@
 				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"e","type":"tuple"}
 			],
 			"outputs": [
+			]
+		},
+		{
+			"name": "supplyImproved",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"twTotal","type":"uint32"},
+				{"name":"owTotal","type":"uint32"},
+				{"name":"feeTotal","type":"uint32"},
+				{"name":"unallocated","type":"uint32"}
 			]
 		},
 		{
@@ -147,49 +157,11 @@
 		{
 			"name": "initMember",
 			"inputs": [
-				{"name":"console","type":"address"},
-				{"name":"eventLog","type":"address"},
-				{"name":"root","type":"address"},
-				{"name":"medium","type":"address"},
-				{"name":"dashboard","type":"address"},
-				{"name":"id","type":"uint16"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "meet",
-			"inputs": [
 				{"name":"id","type":"uint16"},
-				{"name":"a","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "updateEnv",
-			"inputs": [
-				{"name":"console","type":"address"},
-				{"name":"eventLog","type":"address"},
 				{"name":"root","type":"address"},
-				{"name":"medium","type":"address"},
-				{"name":"dashboard","type":"address"},
-				{"name":"logLevel","type":"uint16"}
+				{"name":"medium","type":"address"}
 			],
 			"outputs": [
-			]
-		},
-		{
-			"name": "getEnv",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"console","type":"address"},
-				{"name":"eventLog","type":"address"},
-				{"name":"root","type":"address"},
-				{"name":"medium","type":"address"},
-				{"name":"dashboard","type":"address"},
-				{"name":"logLevel","type":"uint16"}
 			]
 		},
 		{
@@ -197,6 +169,30 @@
 			"inputs": [
 			],
 			"outputs": [
+			]
+		},
+		{
+			"name": "_id",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_id","type":"uint16"}
+			]
+		},
+		{
+			"name": "_root",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_root","type":"address"}
+			]
+		},
+		{
+			"name": "_medium",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_medium","type":"address"}
 			]
 		},
 		{
@@ -208,27 +204,19 @@
 			]
 		},
 		{
-			"name": "_onApproval",
-			"inputs": [
-			],
-			"outputs": [
-				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"_onApproval","type":"map(uint32,tuple)"}
-			]
-		},
-		{
-			"name": "_archived",
-			"inputs": [
-			],
-			"outputs": [
-				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"_archived","type":"map(uint32,tuple)"}
-			]
-		},
-		{
 			"name": "_proposals",
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"createdAt","type":"uint32"},{"name":"validUntil","type":"uint32"},{"name":"confirmedAt","type":"uint32"},{"name":"state","type":"uint8"},{"name":"signsAt","type":"uint8"},{"name":"signs","type":"uint16"},{"name":"signsReq","type":"uint8"},{"name":"value","type":"uint32"},{"name":"actor","type":"uint16"}],"name":"_proposals","type":"map(uint32,tuple)"}
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"createdAt","type":"uint32"},{"name":"expireAt","type":"uint32"},{"name":"resolvedAt","type":"uint32"},{"name":"state","type":"uint8"},{"name":"signsAt","type":"uint8"},{"name":"signsMask","type":"uint16"},{"name":"signsReq","type":"uint8"},{"name":"value","type":"uint32"},{"name":"actor","type":"uint16"}],"name":"_proposals","type":"map(uint32,tuple)"}
+			]
+		},
+		{
+			"name": "_currentEvent",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"eType","type":"uint8"},{"name":"state","type":"uint8"},{"name":"createdAt","type":"uint32"}],"name":"_currentEvent","type":"tuple"}
 			]
 		},
 		{
@@ -244,7 +232,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"_owners","type":"map(uint8,address)"}
+				{"components":[{"name":"clientId","type":"uint16"},{"name":"tokenWalletId","type":"uint16"},{"name":"addr","type":"address"},{"name":"tokenWalletAddr","type":"address"},{"name":"createdAt","type":"uint32"}],"name":"_owners","type":"map(uint8,tuple)"}
 			]
 		}
 	],

@@ -16,6 +16,7 @@ class CreateWalletAPIView(ListAPIView):
             "address": new_wallet["address"],
             "balance": new_wallet["balance"]
         }
+
         return Response(status=status.HTTP_200_OK, data=response_data)
 
 

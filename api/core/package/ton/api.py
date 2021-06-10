@@ -5,33 +5,33 @@ from pathlib import Path
 from tonclient.client import TonClient, DEVNET_BASE_URL, MAINNET_BASE_URL
 from tonclient import types
 from tonclient.types import Abi
+import json
+
+with open(Path.cwd() / 'core' / 'package' / 'ton' / 'Env.json') as f:
+    config = json.load(f)
 
 
 class TonCli(TonClient):
+
     def __init__(self, test=False):
-        net_base_url = MAINNET_BASE_URL
+        net_base_url = config["network"]
         self.console = ' '
         if test:
-            net_base_url = DEVNET_BASE_URL
-            self.CONSOLE = "0:10677a33d3a5edcb4b39a6beb43a124e73c62c70cbb99ed4f4e9d4b29c22f8be"
-            self.ROOT = "0:397b4df5409c29d1c5ccc00f94706b9f025054262a509c827a9b99c270b99128"
-            self.UAX_CODE_HASH = "5a2e419f76e68aa8fbd8f6dfba9c25c5fedc82c76801ab62c87b0ae7a738b4f2"
-            self.MEDIUM = "0:f4e70848721e239245c6ab07bdae957021fa1a2ae421fdbc3f7e0467b5cec99e"
-	p = 100
+            self.CONSOLE = "0:16aa946dfaa4bb991642e840754b754af8a5b07fe29d90579b48dcb09afa5453"
+            self.ROOT = config["contracts"]["Root"]
+            self.MEDIUM = config["contracts"]["Medium"]
+            self.UAX_CODE_HASH = "77ec03e2b41f29fe303914f7f4682013556b6e68d40bb72a392eda5db56fed09"
+
         self.config = types.ClientConfig()
         self.config.network.server_address = net_base_url
-	foo = self._run_onchain(
-            self.CONSOLE, self._ABI("Console"),
-            "deployTokenWalletsWithKeys", {"keys": [f'0x{pubkey}']})
         super().__init__(config=self.config, is_async=False)
-	
 
     def deploy_with_key(self, pubkey):
         res = self._run_onchain(
-            self.CONSOLE, self._ABI("Console"),
+            self.ROOT, self._ABI("Root"),
             "deployTokenWalletsWithKeys", {"keys": [f'0x{pubkey}']})
-        account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
-        return f'0:{account.id}'
+
+        return res.decoded.output["addrs"][0]
 
     def create_mnemonic_from_random(self):
         mnemonic = self.crypto.mnemonic_from_random(params=types.ParamsOfMnemonicFromRandom())
@@ -48,16 +48,19 @@ class TonCli(TonClient):
             boc = self._wait_account(address)
         except:
             return 0
-        balance = self._run_getter(address, self._ABI("TokenWallet"), boc, "_balance")
-        return balance['_balance']
+        balance = self._run_getter(address, self._ABI("TokenWallet"), boc, "getFinances")
+        return balance['balance']
 
     def check_address(self, address):
         code_hash = self._query_account({'id': {'eq': address}}, 'code_hash')
         return code_hash == self.UAX_CODE_HASH
 
     def get_address(self, pubkey, wc=0):
-        account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
-        return f'{wc}:{account.id}'
+        #account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
+        #return f'{wc}:{account.id}'
+        response = self._run_getter(self.ROOT, self._ABI("Root"), self._wait_account(self.ROOT), "_roster")
+        addrs = {response["_roster"][k]["key"]: k for k in response["_roster"]}
+        return addrs["0x"+pubkey]
 
     def get_fee(self):
         params = {}
@@ -92,7 +95,7 @@ class TonCli(TonClient):
                 value: int):
 
         self._run_onchain(
-            address_from, self._ABI('TokenWallet'), 'transferTokensExt', {"to": to, "val": value},
+            address_from, self._ABI('TokenWallet'), 'transferTokens', {"to": to, "val": value},
             types.Signer.Keys(keypair), wait=False
         )
 
@@ -181,15 +184,23 @@ class TonCli(TonClient):
         else:
             return msg, shard_block_id
 
-    # Testnet method
-    def deploy_with_token(self, pubkey, tokens):
-        res = self._run_onchain(
-            self.CONSOLE, self._ABI("Console"),
-            "deployTokenWalletWithTokens", {"key": f"0x{pubkey}", "tokens": tokens})
-        account = self._make_account(self._TVC('TokenWallet'), self._ABI('TokenWallet'), pubkey)
-        return f'0:{account.id}'
 
-
-
+# def rainbow_cycle(slow=0):
+#     j = 0
+#     li = []
+#     while modes["rainbow"] == "on":
+#         j += 1
+#         for i in range(30):
+#             rc_index = (i * 256 // 328) + j
+#             roof1[i] = brightness_control(wheel(rc_index & 255), brightness=0.5)
+#         time.sleep(slow)
+#         roof1.write()
+#         li.append(time.time())
+#         if len(li) > 50:
+#             modes["rainbow"] = "off"
+#
+#             print(li[0], li[-1:])
+#
+#     return
 
 
