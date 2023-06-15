@@ -20,7 +20,7 @@ class TonCli(TonClient):
             self.CONSOLE = "0:16aa946dfaa4bb991642e840754b754af8a5b07fe29d90579b48dcb09afa5453"
             self.ROOT = config["contracts"]["Root"]
             self.MEDIUM = config["contracts"]["Medium"]
-            self.UAX_CODE_HASH = "77ec03e2b41f29fe303914f7f4682013556b6e68d40bb72a392eda5db56fed09"
+            self.UAX_CODE_HASH = "3b446fa16d0d905af8df1afc6f7d09d0c1b6ecdc45f7c9fd7cf4edbc468ca907"
 
         self.config = types.ClientConfig()
         self.config.network.server_address = net_base_url

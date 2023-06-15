@@ -26,5 +26,5 @@ django-redis==4.12.1
 django-celery-beat
 django-celery-results
 django-admin-tools==0.9.0
-ton-client-py
+ton-client-py==1.16.0.0
 
